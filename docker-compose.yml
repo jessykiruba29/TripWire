@@ -1,0 +1,52 @@
+# Tripwire local stack: FalkorDB + the API.
+#
+# The API service needs NO LLM key: contradiction detection, staleness
+# propagation, expert ranking and alerting are all deterministic and rule-based.
+# An LLM key is only used by the optional free-text ingestion path.
+#
+# NOTE: Docker is not installed on the machine this repository was prepared on,
+# so `docker compose up` has NOT been run here. This file has only been checked
+# for YAML validity with `python -c "import yaml; yaml.safe_load(open('docker-compose.yml'))"`.
+
+services:
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: tripwire-falkordb
+    ports:
+      - "6379:6379"
+    volumes:
+      - falkordb_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -p 6379 ping || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tripwire-api
+    environment:
+      TRIPWIRE_STORE: falkordb
+      TRIPWIRE_STORE_FALLBACK: "true"
+      FALKOR_HOST: falkordb
+      FALKOR_PORT: "6379"
+      FALKOR_GRAPH: tripwire
+      TRIPWIRE_API_HOST: 0.0.0.0
+      TRIPWIRE_API_PORT: "8000"
+      TRIPWIRE_CORS_ORIGINS: "*"
+      TRIPWIRE_SEED_ON_STARTUP: "true"
+      TRIPWIRE_LOG_LEVEL: INFO
+      # LLM_PROVIDER / LLM_API_KEY are intentionally unset: the demo is offline.
+    ports:
+      - "8000:8000"
+    depends_on:
+      falkordb:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  falkordb_data:

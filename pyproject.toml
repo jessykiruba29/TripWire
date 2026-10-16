@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tripwire"
+version = "1.0.0"
+description = "Tripwire: decision provenance and stale-knowledge detection over a knowledge graph."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [{ name = "Tripwire" }]
+keywords = ["knowledge-graph", "provenance", "staleness", "contradiction", "falkordb", "mcp"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "fastapi>=0.143.2",
+    "uvicorn[standard]>=0.54.0",
+    "pydantic>=2.14.1",
+    "pydantic-settings>=2.16.0",
+    "python-dotenv>=1.2.4",
+    "httpx>=0.28.1",
+    "falkordb>=1.8.0",
+    "redis>=8.1.0",
+    "mcp>=2.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]
+
+[project.scripts]
+tripwire = "tripwire.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["tripwire*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The MCP protocol tests are async; "auto" runs every `async def test_*` without
+# extra markers (the explicit @pytest.mark.asyncio markers still work).
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = ["E501"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]

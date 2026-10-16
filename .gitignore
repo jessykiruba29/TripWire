@@ -1,0 +1,81 @@
+# --- Python artefacts -------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+pip-wheel-metadata/
+
+# --- Virtual environments ---------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# --- Secrets / local configuration ------------------------------------------
+# Real credentials never enter version control; .env.example documents them.
+.env
+.env.*
+!.env.example
+.env.example
+
+# --- Runtime state (JSON graph store + atomic-write temp files) -------------
+# The json backend persists the graph here, and JsonGraphStore writes atomically
+# via a ".tripwire-*.tmp" sibling before os.replace().
+data/
+*.state.json
+.tripwire-*.tmp
+
+# --- Test / tooling caches --------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.tox/
+.nox/
+
+# --- Test / coverage report output ------------------------------------------
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+junit*.xml
+test-results/
+reports/
+
+# --- pytest scratch output --------------------------------------------------
+# Generated throwaway test output, never source:
+#   pytest-of-<user>/  pytest's basetemp root, created in the CWD when the system
+#                      temp location is unusable
+#   pytest-*/          other basetemp naming
+#   tmp*/              ad-hoc debug/test temp directories (tmpetio5o3h, tmpl8ue8rte, ...)
+#   _pytest_*.txt      captured full-suite run logs
+pytest-of-Jessy/
+pytest-*/
+tmp*/
+_pytest_*.txt
+*_pytest_*_tmp.txt
+
+# --- Editors / OS -----------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- NOTE: tests/ is deliberately NOT ignored -------------------------------
+# The test suite is a deliverable of this project, not scratch output: the brief
+# requires automated tests covering the graph engine, the API, the MCP tools and
+# the full demo flow, and a claim that "the tests pass" is only reproducible if
+# the tests are in version control. Ignoring tests/ would also hide the negative
+# cases (unrelated decision untouched, unverified source not auto-accepted) that
+# demonstrate the engine's restraint.
+#
+# If you still want them out of the repo, uncomment the two lines below:
+# tests/
+# !tests/conftest.py

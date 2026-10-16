@@ -1,0 +1,22 @@
+# Tripwire runtime dependencies.
+#
+# Lower bounds match the versions verified in the development environment
+# (checked with `python -m pip show`). They are >= floors, not exact pins, so a
+# resolver can pick up compatible patch/minor upgrades.
+
+fastapi>=0.143.2
+# [standard] pulls in the ASGI server extras (uvloop/httptools on non-Windows).
+uvicorn[standard]>=0.54.0
+# pydantic v2 (the code targets v2 APIs).
+pydantic>=2.14.1
+pydantic-settings>=2.16.0
+# Optional but recommended: .env loading for local runs (config has a fallback).
+python-dotenv>=1.2.4
+# Used by the API layer and by the ingestion LLM path.
+httpx>=0.28.1
+# Graph store backends. Both are optional at runtime: without them Tripwire
+# uses the JSON or in-memory store.
+falkordb>=1.8.0
+redis>=8.1.0
+# MCP server (imports mcp.server.mcpserver).
+mcp>=2.3.0
