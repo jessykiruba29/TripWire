@@ -1,0 +1,107 @@
+/* Decision cards: status, review state and the evidence that challenges them. */
+
+.dec {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.dec--selected {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand-soft);
+}
+
+.dec--attention {
+  border-left: 3px solid var(--signal-warning);
+}
+
+.dec__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dec__title {
+  font-size: var(--fs-base);
+  font-weight: 620;
+  color: var(--ink);
+  min-width: 0;
+}
+
+.dec__head:hover .dec__title {
+  color: var(--brand-ink);
+}
+
+.dec__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.dec__confidence {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 120px;
+  max-width: 190px;
+  flex: 1 1 120px;
+}
+
+.dec__reason {
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.dec__alternate {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  border-radius: var(--radius);
+  background: var(--signal-warning-soft);
+  border: 1px solid #f0d8a8;
+  color: #6b3f00;
+  font-size: var(--fs-sm);
+}
+
+.dec__alternate-list {
+  margin: 3px 0 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dec__flag {
+  color: var(--signal-warning);
+}
+
+.dec__plain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: var(--ink);
+}
+
+.dec__plain:hover .dec__title {
+  color: var(--brand-ink);
+}

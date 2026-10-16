@@ -1,0 +1,94 @@
+{
+ "available": true,
+ "adapters": [
+  {
+   "name": "meeting_note",
+   "source_system": "meeting_note",
+   "produces_label": "Document",
+   "default_doc_type": "meeting_note",
+   "description": "Meeting minutes: decisions taken, risks raised and attendees.",
+   "integration_type": "file_or_webhook_record",
+   "integration_note": "Accepts a documented JSON record (file upload, webhook payload or API call). No live provider credential or connector is configured in this build.",
+   "input_shape": {
+    "external_id": "required - note id, e.g. 'NWL-MN-001'",
+    "title": "required - meeting title",
+    "notes": "required - the note body (fallback: 'body', 'text')",
+    "author": "optional - who wrote the notes (recorded as the author)",
+    "participants": "optional - attendees; recorded as weaker evidence than authorship",
+    "timestamp": "optional - meeting instant",
+    "mentions": "optional - systems/projects/people discussed",
+    "claims": "optional - structured claims [{subject, attribute, value, ...}]",
+    "actions": "optional - action items, preserved as metadata",
+    "confidence": "optional - 0..1 extraction confidence (default 0.85)"
+   }
+  },
+  {
+   "name": "prd",
+   "source_system": "prd",
+   "produces_label": "Document",
+   "default_doc_type": "prd",
+   "description": "A product requirements document describing scope, decisions and dependencies.",
+   "integration_type": "file_or_webhook_record",
+   "integration_note": "Accepts a documented JSON record (file upload, webhook payload or API call). No live provider credential or connector is configured in this build.",
+   "input_shape": {
+    "external_id": "required - document id, e.g. 'NWL-PRD-001'",
+    "title": "required - the document title",
+    "summary": "optional - short abstract",
+    "body": "optional - full document body (fallback: 'text')",
+    "sections": "optional - list of {heading, body} objects, preserved as metadata",
+    "author": "optional - document owner",
+    "version": "optional - document version string",
+    "timestamp": "optional - publication instant",
+    "mentions": "optional - systems/projects/people the PRD concerns",
+    "claims": "optional - structured claims [{subject, attribute, value, ...}]",
+    "confidence": "optional - 0..1 extraction confidence (default 0.9)"
+   }
+  },
+  {
+   "name": "slack",
+   "source_system": "slack",
+   "produces_label": "Message",
+   "default_doc_type": null,
+   "description": "A Slack message: channel conversation, alert or announcement.",
+   "integration_type": "file_or_webhook_record",
+   "integration_note": "Accepts a documented JSON record (file upload, webhook payload or API call). No live provider credential or connector is configured in this build.",
+   "input_shape": {
+    "external_id": "required - the provider message id (used for de-duplication)",
+    "text": "required - the message body",
+    "channel": "optional - channel name, e.g. '#eu-launch'",
+    "author": "optional - display name or handle of the sender",
+    "timestamp": "optional - ISO-8601 or Slack-style timestamp",
+    "title": "optional - short summary; defaults to a truncation of the body",
+    "mentions": "optional - list of entity names the message discusses",
+    "claims": "optional - structured claims [{subject, attribute, value, ...}]",
+    "thread_id": "optional - thread parent id, preserved as metadata",
+    "url": "optional - permalink to the message",
+    "confidence": "optional - 0..1 extraction confidence (default 0.8)"
+   }
+  },
+  {
+   "name": "ticket",
+   "source_system": "ticket",
+   "produces_label": "Document",
+   "default_doc_type": "ticket",
+   "description": "A support, incident or engineering ticket with a resolver.",
+   "integration_type": "file_or_webhook_record",
+   "integration_note": "Accepts a documented JSON record (file upload, webhook payload or API call). No live provider credential or connector is configured in this build.",
+   "input_shape": {
+    "external_id": "required - the ticket key/id, e.g. 'NWL-2312'",
+    "summary": "required - the ticket summary (fallback: 'title', 'text')",
+    "description": "optional - the full description body",
+    "reporter": "optional - who raised it",
+    "assignee": "optional - who worked on it",
+    "resolved_by": "optional - who closed it (recorded as the RESOLVED edge)",
+    "status": "optional - provider status, e.g. 'done', 'open', 'in_progress'",
+    "timestamp": "optional - created or updated instant",
+    "mentions": "optional - list of entity names the ticket concerns",
+    "claims": "optional - structured claims [{subject, attribute, value, ...}]",
+    "url": "optional - link to the ticket",
+    "confidence": "optional - 0..1 extraction confidence (default 0.85)"
+   }
+  }
+ ],
+ "message": null
+}

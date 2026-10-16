@@ -1,0 +1,148 @@
+/**
+ * Alert review — component-specific styles only, namespaced `.alerts-*`.
+ *
+ * Shared primitives (panel, badge, chip, btn, callout, section, meter, list) come
+ * from `styles/global.css`; nothing here restyles them.
+ */
+
+.alerts-list {
+  gap: 0;
+}
+
+.alerts-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4) 0;
+  min-width: 0;
+}
+
+.alerts-item__title {
+  font-size: var(--fs-md);
+  font-weight: 640;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.alerts-quote {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ id clusters */
+
+.alerts-ids {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.alerts-ids__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.alerts-ids__label {
+  font-size: var(--fs-2xs);
+  font-weight: 680;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  flex: none;
+}
+
+/* ------------------------------------------------------------- review controls */
+
+.alerts-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  min-width: 0;
+}
+
+.alerts-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.alerts-note__label {
+  font-size: var(--fs-xs);
+  font-weight: 640;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.alerts-note__input {
+  font: inherit;
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: var(--sp-2);
+  min-height: 54px;
+  resize: vertical;
+}
+
+.alerts-note__input:disabled {
+  opacity: 0.6;
+}
+
+.alerts-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.alerts-confirm {
+  color: var(--ink-muted);
+}
+
+/* -------------------------------------------------------------------- audit */
+
+.alerts-audit {
+  gap: 0;
+}
+
+.alerts-audit__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 0;
+  min-width: 0;
+}
+
+.alerts-arrow {
+  color: var(--ink-faint);
+}
+
+.alerts-audit__note {
+  color: var(--ink-2);
+}
+
+/* ------------------------------------------------------------------- people */
+
+.alerts-people {
+  gap: var(--sp-2);
+}
+
+.alerts-person {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.alerts-person__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}

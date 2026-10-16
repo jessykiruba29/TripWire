@@ -1,0 +1,138 @@
+/* Demo driver: the trigger form, the applied-event summary and the storyline stepper. */
+
+.demo__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.demo__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.demo__field textarea,
+.demo__field select {
+  font: inherit;
+  font-size: var(--fs-base);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 7px 9px;
+  width: 100%;
+  resize: vertical;
+}
+
+.demo__field textarea:focus,
+.demo__field select:focus {
+  border-color: var(--brand);
+  outline: 2px solid var(--brand-soft);
+  outline-offset: 0;
+}
+
+.demo__form-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.demo__field--inline {
+  flex: 0 0 190px;
+}
+
+.demo__buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.demo__summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border: 1px solid #bcdff0;
+  background: var(--signal-info-soft);
+  border-radius: var(--radius);
+  margin-bottom: var(--sp-3);
+}
+
+.demo__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  counter-reset: step;
+}
+
+.demo__step {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.demo__step--ready {
+  background: var(--surface);
+  border-color: var(--border-strong);
+}
+
+.demo__step-index {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  font-weight: 680;
+  font-family: var(--font-mono);
+  background: var(--surface-3);
+  color: var(--ink-muted);
+  border: 1px solid var(--border);
+}
+
+.demo__step--ready .demo__step-index {
+  background: var(--signal-ok-soft);
+  color: var(--signal-ok);
+  border-color: #b9e0cd;
+}
+
+.demo__step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.demo__step-title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.demo__step--ready .demo__step-title {
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .demo__step {
+    flex-wrap: wrap;
+  }
+  .demo__buttons {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,45 @@
+/* App-level layout glue: the main column grid and shared app controls. */
+
+.app__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .app__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.anchor-target {
+  scroll-margin-top: 84px;
+}
+
+.anchor-target:focus {
+  outline: none;
+}
+
+.anchor-target:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 4px;
+  border-radius: var(--radius);
+}
+
+.app__select {
+  font: inherit;
+  font-size: var(--fs-base);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 6px 9px;
+  width: 100%;
+}
+
+.app__select:focus {
+  border-color: var(--brand);
+  outline: 2px solid var(--brand-soft);
+  outline-offset: 0;
+}

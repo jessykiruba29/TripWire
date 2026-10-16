@@ -1,0 +1,8 @@
+{
+ "status": 404,
+ "body": {
+  "error": "not_found",
+  "message": "alert 'alert:does-not-exist' does not exist",
+  "details": {}
+ }
+}

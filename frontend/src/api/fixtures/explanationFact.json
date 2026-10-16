@@ -1,0 +1,129 @@
+{
+ "found": true,
+ "fact_id": null,
+ "fact": {
+  "id": "fact:frankfurt-partner-compliance-valid",
+  "label": "Fact",
+  "type": "Fact",
+  "name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+  "subject_id": "system:frankfurt-hosting-partner",
+  "subject_name": "Frankfurt Hosting Partner",
+  "attribute": "compliance_status",
+  "value": "valid",
+  "statement": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+  "valid_from": "2025-04-01T00:00:00Z",
+  "valid_to": "2026-02-20T08:15:00Z",
+  "recorded_at": "2026-01-12T10:05:00Z",
+  "recorded_to": "2026-02-20T08:15:00Z",
+  "confidence": 0.95,
+  "verified": true,
+  "status": "ACTIVE",
+  "review_status": "AUTO_ACCEPTED",
+  "source_ref": "slack:#data-compliance/2026-01-12",
+  "provenance_class": "verified",
+  "invalidated_by": "fact:5f3054083121"
+ },
+ "provenance": {
+  "fact_id": "fact:frankfurt-partner-compliance-valid",
+  "found": true,
+  "name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+  "statement": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+  "value": "valid",
+  "attribute": "compliance_status",
+  "subject_id": "system:frankfurt-hosting-partner",
+  "subject_name": "Frankfurt Hosting Partner",
+  "status": "ACTIVE",
+  "confidence": 0.95,
+  "verified": true,
+  "valid_from": "2025-04-01T00:00:00Z",
+  "valid_to": "2026-02-20T08:15:00Z",
+  "recorded_at": "2026-01-12T10:05:00Z",
+  "recorded_to": "2026-02-20T08:15:00Z",
+  "sources": [
+   {
+    "source_id": "message:slack:nw-slack-009",
+    "label": "Message",
+    "name": "Verified the partner's EU compliance certification DE-CMP-4471 as curr",
+    "doc_type": null,
+    "timestamp": "2026-01-12T10:05:00Z",
+    "source_ref": "slack:#data-compliance/2026-01-12",
+    "url": null,
+    "author_id": "person:aisha-khan",
+    "author_name": "Aisha Khan",
+    "channel": "#data-compliance",
+    "confidence": 0.95,
+    "excerpt": "Verified the partner's EU compliance certification DE-CMP-4471 as current. Recording it as our residency basis."
+   },
+   {
+    "source_id": "document:prd:nwl-prd-001",
+    "label": "Document",
+    "name": "PRD: EU Launch on Frankfurt Hosting Partner",
+    "doc_type": "prd",
+    "timestamp": "2026-02-02T08:30:00Z",
+    "source_ref": "prd:NWL-PRD-001",
+    "url": null,
+    "author_id": "person:priya-raman",
+    "author_name": "Priya Raman",
+    "channel": null,
+    "confidence": 0.92,
+    "excerpt": "The EU launch proceeds on the Frankfurt hosting partner as primary host for EU customer data. The launch depends on the data-residency assumption, which is supported by the partner's EU compliance certification and, independently, its SOC 2 Type II attestation."
+   }
+  ]
+ },
+ "contradictions": [
+  {
+   "new_fact_id": "fact:5f3054083121",
+   "new_fact_name": "Frankfurt Hosting Partner's EU compliance certification DE-CMP-4471 has been revoked by the issuing authority, effective immediately.",
+   "new_value": "revoked",
+   "other_fact_id": "fact:frankfurt-partner-compliance-valid",
+   "other_fact_name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+   "other_value": "valid",
+   "kind": "contradiction",
+   "status": "VERIFIED",
+   "confidence": 0.936,
+   "review_status": "NEEDS_REVIEW",
+   "at": "2026-02-20T08:15:00Z",
+   "rule": "compliance_revocation",
+   "rationale": "Both facts describe 'compliance_status' for Frankfurt Hosting Partner: the earlier record states 'valid' while the new record states 'revoked', with overlapping validity, so they cannot both hold. Rule 'compliance_revocation': A compliance or certification status asserted as revoked contradicts an earlier affirmation for the same subject: downstream commitments that depend on it may no longer be lawful or deliverable."
+  }
+ ],
+ "contradiction_count": 1,
+ "supporting_assumptions": [
+  {
+   "assumption_id": "assumption:data-residency-eu",
+   "name": "EU data residency is contractually enforceable in Frankfurt"
+  },
+  {
+   "assumption_id": "assumption:eu-regulatory-eligibility",
+   "name": "Regulatory eligibility rests on the partner's certification being current"
+  }
+ ],
+ "affected_entities": [
+  {
+   "entity_id": "decision:eu-launch",
+   "entity_name": "Launch Northwind in the EU on the Frankfurt hosting partner",
+   "entity_label": "Decision",
+   "reason": "'Launch Northwind in the EU on the Frankfurt hosting partner' assumes 'EU data residency is contractually enforceable in Frankfurt', which is supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (changed). Review the decision's continued validity. Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+   "at": "2026-02-20T08:15:00Z",
+   "alert_id": null
+  },
+  {
+   "entity_id": "decision:hiring-eu-support",
+   "entity_name": "Hire six EU support engineers in Q3",
+   "entity_label": "Decision",
+   "reason": "'Hire six EU support engineers in Q3' depends on 'Launch Northwind in the EU on the Frankfurt hosting partner', which assumes 'EU data residency is contractually enforceable in Frankfurt' supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (1 hop(s) away). Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+   "at": "2026-02-20T08:15:00Z",
+   "alert_id": null
+  },
+  {
+   "entity_id": "decision:legal-signoff-eu",
+   "entity_name": "Rely on the partner's EU certification for regulatory sign-off",
+   "entity_label": "Decision",
+   "reason": "'Rely on the partner's EU certification for regulatory sign-off' assumes 'Regulatory eligibility rests on the partner's certification being current', which is supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (changed). Review the decision's continued validity. No surviving independent support was found for the assumption, so the impact is reported as confirmed *for review* - the decision is not automatically invalidated.",
+   "at": "2026-02-20T08:15:00Z",
+   "alert_id": null
+  }
+ ],
+ "missing": [],
+ "generated_at": "2026-10-16T03:52:46Z"
+}

@@ -1,0 +1,161 @@
+{
+ "seeded": true,
+ "dataset": {
+  "name": "northwind-labs",
+  "version": "1.0.0",
+  "storyline": "Northwind Labs plans an EU launch that depends on the Frankfurt hosting partner. The launch decision assumes EU data residency, which is supported by the partner's EU compliance certification AND, independently, a SOC 2 Type II attestation. A separate regulatory-eligibility decision rests on the certification alone. When the certification is revoked, Tripwire traces the affected decisions, shows that the launch still has independent supporting evidence (so it is only potentially affected), confirms that the regulatory decision has lost its only support, preserves both facts and their validity windows, surfaces the engineer who actually understands the partner integration, and raises explainable alerts.",
+  "expected_counts": {
+   "Message": 40,
+   "Document": 20,
+   "Person": 12,
+   "Team": 4,
+   "System": 8,
+   "Project": 6,
+   "Decision": 7,
+   "Assumption": 4,
+   "Fact": 13
+  },
+  "actual_counts": {
+   "Alert": 8,
+   "Assumption": 4,
+   "Decision": 7,
+   "Document": 20,
+   "Event": 27,
+   "Fact": 14,
+   "Message": 41,
+   "Person": 12,
+   "Project": 6,
+   "System": 8,
+   "Team": 4
+  },
+  "matches_expected": {
+   "Message": false,
+   "Document": true,
+   "Person": true,
+   "Team": true,
+   "System": true,
+   "Project": true,
+   "Decision": true,
+   "Assumption": true,
+   "Fact": false
+  }
+ },
+ "store": {
+  "configured_backend": "memory",
+  "active_backend": "memory",
+  "health": {
+   "backend": "memory",
+   "ok": true,
+   "nodes": 151,
+   "edges": 438
+  }
+ },
+ "llm": {
+  "enabled": false,
+  "provider": "none",
+  "model": "",
+  "note": "Deterministic rule engine in use; no external AI credentials required."
+ },
+ "counts": {
+  "nodes": 151,
+  "edges": 438,
+  "by_label": {
+   "Alert": 8,
+   "Assumption": 4,
+   "Decision": 7,
+   "Document": 20,
+   "Event": 27,
+   "Fact": 14,
+   "Message": 41,
+   "Person": 12,
+   "Project": 6,
+   "System": 8,
+   "Team": 4
+  },
+  "by_rel": {
+   "ABOUT": 39,
+   "AFFECTS": 8,
+   "ASSUMES": 4,
+   "AUTHORED": 61,
+   "CONTRADICTS": 1,
+   "DEPENDS_ON": 3,
+   "EVIDENCE_FOR": 16,
+   "IMPACTS": 7,
+   "MADE": 7,
+   "MENTIONS": 167,
+   "ON_TEAM": 12,
+   "OWNS": 13,
+   "RESOLVED": 15,
+   "REVIEWS": 24,
+   "STALED": 8,
+   "STATES": 32,
+   "SUPPORTED_BY": 5,
+   "TRIGGERED_BY": 8,
+   "USES": 8
+  }
+ },
+ "key_entities": {
+  "eu_launch_decision": "decision:eu-launch",
+  "pricing_decision": "decision:pricing-eu",
+  "hiring_decision": "decision:hiring-eu-support",
+  "legal_signoff_decision": "decision:legal-signoff-eu",
+  "apac_decision": "decision:apac-datacentre",
+  "dark_mode_decision": "decision:dark-mode-default",
+  "warehouse_decision": "decision:warehouse-regional-split",
+  "frankfurt_partner": "system:frankfurt-hosting-partner",
+  "residency_controls": "system:eu-data-residency-controls",
+  "ingest_pipeline": "system:northwind-ingest-pipeline",
+  "compliance_fact": "fact:frankfurt-partner-compliance-valid",
+  "soc2_fact": "fact:frankfurt-partner-soc2-attestation-valid",
+  "rate_fact": "fact:frankfurt-partner-rate-hold",
+  "residency_assumption": "assumption:data-residency-eu",
+  "eligibility_assumption": "assumption:eu-regulatory-eligibility",
+  "cost_assumption": "assumption:eu-cost-base",
+  "eu_launch_project": "project:eu-launch",
+  "pricing_project": "project:pricing-v2",
+  "hiring_project": "project:q3-hiring-plan",
+  "apac_project": "project:apac-expansion",
+  "mobile_project": "project:mobile-redesign",
+  "data_governance_project": "project:data-governance-overhaul",
+  "hidden_expert": "person:jonas-berg",
+  "official_owner": "person:priya-raman",
+  "vendor_owner": "person:lena-fischer"
+ },
+ "alerts": {
+  "total": 8,
+  "status_counts": {
+   "NEEDS_REVIEW": 8
+  }
+ },
+ "history": {
+  "facts_total": 14,
+  "facts_open_belief": 13,
+  "facts_closed_belief": 1,
+  "facts_invalidated": 1,
+  "facts_contested": 0,
+  "status_change_events": 8
+ },
+ "config": {
+  "store_backend": "memory",
+  "store_fallback": true,
+  "state_path": "data/graph.json",
+  "falkordb": {
+   "host": "localhost",
+   "port": 6379,
+   "graph": "tripwire",
+   "username": null,
+   "password_configured": false
+  },
+  "llm": {
+   "provider": "none",
+   "model": "",
+   "enabled": false,
+   "api_key_configured": false
+  },
+  "limits": {
+   "max_propagation_depth": 3,
+   "verified_confidence_floor": 0.6
+  },
+  "environment": "development"
+ }
+}

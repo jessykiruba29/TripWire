@@ -1,0 +1,176 @@
+/**
+ * History panel + timeline — component-specific styles only.
+ *
+ * Shared primitives (panel, badge, chip, btn, list, callout, section) come from
+ * `styles/global.css`. Everything here is namespaced `.hist-*` and must not
+ * restyle a shared primitive.
+ */
+
+/* --------------------------------------------------------------- date control */
+
+.hist-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.hist-date {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.hist-date__label {
+  font-size: var(--fs-xs);
+  font-weight: 640;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.hist-date__input {
+  font: inherit;
+  font-size: var(--fs-base);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  min-width: 190px;
+}
+
+.hist-date__input:hover {
+  border-color: var(--brand);
+}
+
+.hist-quicksets {
+  gap: var(--sp-2);
+}
+
+.hist-quicksets [aria-pressed='true'] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+
+/* ------------------------------------------------------------------- fact rows */
+
+.hist-fact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.hist-fact__statement {
+  color: var(--ink);
+}
+
+.hist-axes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--sp-3);
+}
+
+.hist-axis {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  border-left-color: var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  min-width: 0;
+}
+
+/* The two axes are the point of this view — give them distinct, meaningful rails. */
+.hist-axis--world {
+  border-left-color: var(--nt-fact);
+}
+
+.hist-axis--known {
+  border-left-color: var(--nt-decision);
+}
+
+.hist-axis__label {
+  font-size: var(--fs-2xs);
+  font-weight: 680;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.hist-axis__range {
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.hist-bitemporal {
+  color: var(--ink-2);
+}
+
+.hist-arrow {
+  color: var(--ink-faint);
+}
+
+.hist-decision__status {
+  gap: var(--sp-2);
+}
+
+/* ---------------------------------------------------------------- changes list */
+
+.hist-change__at {
+  white-space: nowrap;
+  color: var(--ink-muted);
+}
+
+/* -------------------------------------------------------------- timeline feed */
+
+.hist-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.hist-timeline__day {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hist-timeline__day-heading {
+  font-size: var(--fs-xs);
+  font-weight: 680;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-1);
+  margin-bottom: var(--sp-2);
+}
+
+.hist-entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.hist-entry__at {
+  white-space: nowrap;
+  color: var(--ink-muted);
+}
+
+.hist-entry__summary {
+  color: var(--ink);
+}
+
+.hist-entry__ids {
+  justify-content: flex-end;
+}

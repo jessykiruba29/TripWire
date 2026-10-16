@@ -1,0 +1,182 @@
+/**
+ * Tripwire design system.
+ *
+ * One source of truth for colour, type and spacing. Component styles live in
+ * `global.css` (plain CSS, no preprocessor) and consume these custom properties.
+ *
+ * Colour is meaningful, not decorative:
+ *   - each graph node type owns a hue (see `graphTheme.ts`, which mirrors it on canvas)
+ *   - each review/validity state owns a signal colour
+ * Never introduce a colour that carries no meaning.
+ */
+
+:root {
+  /* Surfaces */
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-2: #fbfcfe;
+  --surface-3: #eef2f7;
+  --graph-bg: #f8fafc;
+
+  /* Ink */
+  --ink: #0f1729;
+  --ink-2: #33415c;
+  --ink-muted: #5c6a82;
+  --ink-faint: #8794a8;
+
+  /* Lines */
+  --border: #dfe5ee;
+  --border-strong: #c3cddc;
+
+  /* Brand */
+  --brand: #1f4bd8;
+  --brand-ink: #14318f;
+  --brand-soft: #e8eefc;
+
+  /* Signals */
+  --signal-critical: #c0392b;
+  --signal-critical-soft: #fdeceb;
+  --signal-warning: #b26a04;
+  --signal-warning-soft: #fdf3e3;
+  --signal-ok: #16714a;
+  --signal-ok-soft: #e6f4ee;
+  --signal-info: #0b6c95;
+  --signal-info-soft: #e6f2f8;
+  --signal-neutral-soft: #eef2f7;
+
+  /* Node type hues — mirrored in graphTheme.ts */
+  --nt-fact: #2563eb;
+  --nt-assumption: #7c3aed;
+  --nt-decision: #0f766e;
+  --nt-project: #b45309;
+  --nt-person: #be185d;
+  --nt-system: #475569;
+  --nt-message: #7c8899;
+  --nt-document: #0891b2;
+  --nt-event: #b91c1c;
+  --nt-team: #4d7c0f;
+
+  /* Type scale */
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-base: 13px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 26px;
+
+  /* Space */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 28px;
+
+  --radius-sm: 4px;
+  --radius: 7px;
+  --radius-lg: 11px;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 41, 0.06);
+  --shadow: 0 2px 8px rgba(15, 23, 41, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 41, 0.18);
+
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--fs-xl);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+h2 {
+  font-size: var(--fs-lg);
+  font-weight: 640;
+  letter-spacing: -0.01em;
+}
+h3 {
+  font-size: var(--fs-md);
+  font-weight: 620;
+}
+h4 {
+  font-size: var(--fs-sm);
+  font-weight: 640;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--brand);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c9d2e0;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aab7ca;
+  background-clip: content-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

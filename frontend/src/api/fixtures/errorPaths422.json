@@ -1,0 +1,29 @@
+{
+ "status": 422,
+ "body": {
+  "error": "validation_error",
+  "message": "Request validation failed.",
+  "details": {
+   "errors": [
+    {
+     "type": "missing",
+     "loc": [
+      "query",
+      "source"
+     ],
+     "msg": "Field required",
+     "input": null
+    },
+    {
+     "type": "missing",
+     "loc": [
+      "query",
+      "target"
+     ],
+     "msg": "Field required",
+     "input": null
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,54 @@
+{
+ "since": "2026-01-01T00:00:00Z",
+ "facts": [
+  {
+   "fact_id": "fact:edge-cache-region-eu",
+   "name": "The Edge Cache primary region is recorded as eu-central-1 after the migration.",
+   "recorded_at": "2026-01-05T09:00:00Z",
+   "statement": "The Edge Cache primary region is recorded as eu-central-1 after the migration.",
+   "status": "ACTIVE",
+   "source_id": null
+  },
+  {
+   "fact_id": "fact:edge-cache-region-us",
+   "name": "A second record states the Edge Cache primary region as us-east-1 pending cleanup.",
+   "recorded_at": "2026-01-06T11:00:00Z",
+   "statement": "A second record states the Edge Cache primary region as us-east-1 pending cleanup.",
+   "status": "ACTIVE",
+   "source_id": null
+  },
+  {
+   "fact_id": "fact:frankfurt-partner-compliance-valid",
+   "name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+   "recorded_at": "2026-01-12T10:05:00Z",
+   "statement": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+   "status": "ACTIVE",
+   "source_id": null
+  }
+ ],
+ "fact_count": 3,
+ "events": [
+  {
+   "event_id": "event:alert-status-change:009cd3c46c26",
+   "event_type": "ALERT_STATUS_CHANGE",
+   "recorded_at": "2026-02-20T08:15:00Z",
+   "summary": "Alert alert:21909486f31e moved from NEW to NEEDS_REVIEW: Routed to reviewers after a verified contradiction.",
+   "actor_id": null
+  },
+  {
+   "event_id": "event:alert-status-change:2902c2c4861f",
+   "event_type": "ALERT_STATUS_CHANGE",
+   "recorded_at": "2026-02-20T08:15:00Z",
+   "summary": "Alert alert:bd0231654219 moved from NEW to NEEDS_REVIEW: Routed to reviewers after a verified contradiction.",
+   "actor_id": null
+  },
+  {
+   "event_id": "event:alert-status-change:335448210571",
+   "event_type": "ALERT_STATUS_CHANGE",
+   "recorded_at": "2026-02-20T08:15:00Z",
+   "summary": "Alert alert:69b70030d292 moved from NEW to NEEDS_REVIEW: Routed to reviewers after a verified contradiction.",
+   "actor_id": null
+  }
+ ],
+ "event_count": 3
+}
