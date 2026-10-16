@@ -79,3 +79,6 @@ Thumbs.db
 # If you still want them out of the repo, uncomment the two lines below:
 # tests/
 # !tests/conftest.py
+
+# --- Node.js compile cache (created by Node when compiling the mock engine) ---
+node-compile-cache/

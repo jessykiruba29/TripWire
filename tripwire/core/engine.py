@@ -52,7 +52,7 @@ from .ids import fact_id as make_fact_id
 from .ids import message_id, person_id, short_hash, slug
 from .index import GraphIndex
 from .models import Edge, EvidencePath, Node, Subgraph
-from .schema import DECISION_STATUSES, NODE_TYPES, REL_TYPES
+from .schema import ALERT_STATUS_TRANSITIONS, DECISION_STATUSES, NODE_TYPES, REL_TYPES
 from .staleness import PropagationPlan, plan_propagation
 from .store import GraphStore
 from .timeutil import now_iso
@@ -1290,6 +1290,12 @@ class GraphEngine:
         if alert is None:
             raise NotFoundError(f"alert {alert_id!r} does not exist")
         view = alert.to_view()
+        # Advertise the legal next statuses from the documented model so a client
+        # renders exactly what the API accepts, plus the current status (a same-status
+        # re-review is how a reviewer attaches a note).  Kept identical to the list
+        # endpoint so the two views never disagree.
+        current = str(alert.props.get("status") or "NEW")
+        view["allowed_transitions"] = [current, *ALERT_STATUS_TRANSITIONS.get(current, ())]
         view["affected"] = [
             {
                 "entity_id": edge.dst,

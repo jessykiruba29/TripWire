@@ -86,6 +86,7 @@ EVENT_TYPES: tuple[str, ...] = (
     "STALENESS_PROPAGATED",
     "STATUS_CHANGE",
     "ALERT_STATUS_CHANGE",
+    "ALERT_REVIEW_NOTE",
     "REVIEW_DECISION",
     "ERROR",
 )

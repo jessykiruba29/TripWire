@@ -375,14 +375,21 @@ def explain_path(
             "reason": f"Target {target_id!r} is not present in the graph.",
         }
 
-    forward = index.all_paths(
-        source_id, target_id, rels=rels, direction=DIRECTION_OUT, max_depth=max_depth, limit=limit
-    )
-    backward = index.all_paths(
-        source_id, target_id, rels=rels, direction=DIRECTION_IN, max_depth=max_depth, limit=limit
+    # One mixed-direction search.  Searching OUT and IN separately could not follow a
+    # chain that leaves the source backwards and rejoins it forwards - for example
+    # Fact <-SUPPORTED_BY- Assumption <-ASSUMES- Decision -IMPACTS-> Project - so
+    # genuinely connected entities were reported as unconnected, and the two halves
+    # could also produce duplicate keys.
+    found_paths = index.all_paths(
+        source_id,
+        target_id,
+        rels=rels,
+        direction=DIRECTION_BOTH,
+        max_depth=max_depth,
+        limit=limit,
     )
     combined: dict[tuple[str, ...], Any] = {}
-    for path in forward + backward:
+    for path in found_paths:
         combined.setdefault(path.key, path)
     paths = sorted(combined.values(), key=lambda p: (len(p.steps), p.key))[:limit]
 

@@ -20,9 +20,19 @@ import os
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Optional
 
-__all__ = ["Settings", "load_settings", "load_dotenv_file"]
+__all__ = ["Settings", "load_settings", "load_dotenv_file", "DEFAULT_CORS_ORIGINS"]
 
 _TRUTHY = {"1", "true", "yes", "on"}
+
+#: Allowed browser origins when ``TRIPWIRE_CORS_ORIGINS`` is not set: the Vite dev
+#: server (5173) and preview server (4173), on both localhost spellings.  A "*"
+#: default would let any origin read the graph, so it must be asked for explicitly.
+DEFAULT_CORS_ORIGINS: tuple[str, ...] = (
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+)
 
 
 def _as_bool(value: Any, default: bool = False) -> bool:
@@ -108,7 +118,10 @@ class Settings:
     # -- API ---------------------------------------------------------------
     api_host: str = "127.0.0.1"
     api_port: int = 8000
-    cors_origins: tuple[str, ...] = ("*",)
+    # Local dev servers rather than "*".  A wildcard is convenient in a demo but lets
+    # any origin read the whole graph, so it is opt-in via TRIPWIRE_CORS_ORIGINS
+    # (comma-separated) instead of being the default.
+    cors_origins: tuple[str, ...] = DEFAULT_CORS_ORIGINS
 
     # -- operations --------------------------------------------------------
     log_level: str = "INFO"
@@ -128,7 +141,7 @@ class Settings:
             value = source.get(key)
             return default if value is None or value == "" else value
 
-        origins = get("TRIPWIRE_CORS_ORIGINS", "*") or "*"
+        origins = get("TRIPWIRE_CORS_ORIGINS", "") or ""
         return cls(
             store_backend=(get("TRIPWIRE_STORE", "falkordb") or "falkordb").strip().lower(),
             store_fallback=_as_bool(get("TRIPWIRE_STORE_FALLBACK"), True),
@@ -149,7 +162,8 @@ class Settings:
             verified_confidence_floor=_as_float(get("TRIPWIRE_VERIFIED_CONFIDENCE_FLOOR"), 0.6),
             api_host=get("TRIPWIRE_API_HOST", "127.0.0.1") or "127.0.0.1",
             api_port=_as_int(get("TRIPWIRE_API_PORT"), 8000),
-            cors_origins=tuple(item.strip() for item in origins.split(",") if item.strip()) or ("*",),
+            cors_origins=tuple(item.strip() for item in origins.split(",") if item.strip())
+            or DEFAULT_CORS_ORIGINS,
             log_level=(get("TRIPWIRE_LOG_LEVEL", "INFO") or "INFO").upper(),
             log_json=_as_bool(get("TRIPWIRE_LOG_JSON"), False),
             seed_on_startup=_as_bool(get("TRIPWIRE_SEED_ON_STARTUP"), False),

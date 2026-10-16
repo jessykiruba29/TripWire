@@ -201,8 +201,19 @@ class GraphIndex:
             pairs.extend((edge, edge.src) for edge in self.incoming(node_id, rels))
         return pairs
 
-    def path_from(self, reach: Reachability, target: str) -> EvidencePath:
-        """Turn a reached node into the concrete edge chain that reached it."""
+    def path_from(
+        self, reach: Reachability, target: str, *, start: Optional[str] = None
+    ) -> EvidencePath:
+        """Turn a reached node into the concrete edge chain that reached it.
+
+        The chain is oriented as a **walk** from a traversal root.  Rendering it in
+        storage order would produce a path whose steps do not follow one another -
+        a reversed chain such as ``assumption -SUPPORTED_BY-> fact`` followed by
+        ``assumption -ASSUMES-> decision`` used to collapse into a bogus
+        ``assumption -> assumption`` path with an invalid edge direction.  Walking
+        from the root makes every step continue from the previous one, and each step
+        records ``edge_direction`` so the true storage direction is never hidden.
+        """
         if not reach.has(target):
             return EvidencePath(steps=[])
         chain: list[Edge] = []
@@ -212,7 +223,15 @@ class GraphIndex:
             chain.append(edge)
             cursor = previous
         chain.reverse()
-        return self.edge_chain_to_path(chain)
+        if start is not None:
+            return self.walk_path(start, chain)
+        # Try every root: with a multi-root traversal only one of them may be the
+        # origin of this particular chain.  Keep the longest continuous walk, and
+        # return nothing rather than a fabricated sequence when none connects.
+        walks = [path for path in (self.walk_path(root, chain) for root in reach.roots) if path.steps]
+        if not walks:
+            return EvidencePath(steps=[])
+        return max(walks, key=lambda path: len(path.steps))
 
     def edge_chain_to_path(self, chain: Iterable[Edge]) -> EvidencePath:
         """Enrich an edge chain with labels/names for API and MCP output."""
@@ -298,7 +317,9 @@ class GraphIndex:
             if len(chain) > max_depth:
                 continue
             if current == target and chain:
-                found.append(self.edge_chain_to_path(chain))
+                # Walk-oriented, not storage-ordered: a chain followed against the
+                # stored edge direction must still read as a continuous path.
+                found.append(self.walk_path(start, chain))
                 continue
             if current == target:
                 continue

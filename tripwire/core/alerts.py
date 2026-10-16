@@ -245,7 +245,41 @@ def transition_alert(
                      "allowed": list(ALERT_STATUS_TRANSITIONS.get(current, ()))},
         )
     if current == target:
-        return alert  # idempotent no-op: no duplicate history entry
+        # Idempotent no-op: never append a duplicate status-change entry.  But a
+        # reviewer who typed a note must not have it silently discarded, so the note
+        # is recorded on the alert and in history while the status stays put.
+        if not note:
+            return alert
+        updated = store.upsert_node(
+            Node(
+                id=alert.id,
+                label="Alert",
+                name=alert.name,
+                props={
+                    "updated_at": moment,
+                    "review_note": note,
+                    "last_review_note": note,
+                    "last_reviewed_by": actor_id,
+                },
+            )
+        )
+        _record_event(
+            store,
+            kind="ALERT_REVIEW_NOTE",
+            summary=f"Note recorded on alert {alert.id} while it remained {current}: {note}",
+            moment=moment,
+            actor_id=actor_id,
+            subject_id=updated.id,
+            extra={
+                "entity_id": updated.id,
+                "from_status": current,
+                "to_status": target,
+                "alert_id": updated.id,
+                "note": note,
+                "status_unchanged": True,
+            },
+        )
+        return updated
 
     updated = store.upsert_node(
         Node(
@@ -497,22 +531,42 @@ def list_alerts(
 
 
 def _alert_view(store: GraphStore, alert: Node) -> dict[str, Any]:
-    """Alert payload enriched with its affected entities."""
+    """Alert payload enriched with its affected entities and legal next statuses.
+
+    ``allowed_transitions`` comes straight from the documented status model in
+    :mod:`tripwire.core.schema`, so a client can render exactly the status changes
+    the engine will accept instead of re-deriving the model (and drifting from it).
+    A same-status re-review is included, because that is how a reviewer adds a note.
+    """
     view = alert.to_view()
+    current = str(alert.props.get("status") or "NEW")
+    view["allowed_transitions"] = [current, *ALERT_STATUS_TRANSITIONS.get(current, ())]
     view["affected"] = affected_entities(store, alert.id)
     view["reviewers"] = list(alert.props.get("reviewers") or [])
     return view
 
 
 def alert_history(store: GraphStore, alert_id: str) -> dict[str, Any]:
-    """Append-only history of an alert, from ``STATUS_CHANGE`` events."""
+    """Append-only history of an alert.
+
+    Includes status changes, the contradiction that raised the alert, and
+    ``ALERT_REVIEW_NOTE`` entries.  A note recorded during a same-status re-review is
+    part of the alert's audit trail, so hiding it here would lose the reviewer's
+    reasoning even though the alert kept it.  Each entry carries ``event_type`` so a
+    client can still filter to status changes only.
+    """
     alert = get_alert(store, alert_id)
     if alert is None:
         raise NotFoundError(f"alert {alert_id!r} does not exist")
+    history_event_types = (
+        "ALERT_STATUS_CHANGE",
+        "ALERT_REVIEW_NOTE",
+        "CONTRADICTION_DETECTED",
+    )
     events = [
         event
         for event in store.get_nodes(label="Event", where={"entity_id": alert_id})
-        if str(event.props.get("event_type")) in ("ALERT_STATUS_CHANGE", "CONTRADICTION_DETECTED")
+        if str(event.props.get("event_type")) in history_event_types
     ]
     if alert.props.get("alert_id"):
         events.extend(
