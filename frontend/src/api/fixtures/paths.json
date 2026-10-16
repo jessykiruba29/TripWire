@@ -1,0 +1,212 @@
+{
+ "found": true,
+ "source": {
+  "id": "fact:frankfurt-partner-compliance-valid",
+  "label": "Fact",
+  "type": "Fact",
+  "name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+  "subject_id": "system:frankfurt-hosting-partner",
+  "subject_name": "Frankfurt Hosting Partner",
+  "attribute": "compliance_status",
+  "value": "valid",
+  "statement": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+  "valid_from": "2025-04-01T00:00:00Z",
+  "valid_to": "2026-02-20T08:15:00Z",
+  "recorded_at": "2026-01-12T10:05:00Z",
+  "recorded_to": "2026-02-20T08:15:00Z",
+  "confidence": 0.95,
+  "verified": true,
+  "status": "ACTIVE",
+  "review_status": "AUTO_ACCEPTED",
+  "source_ref": "slack:#data-compliance/2026-01-12",
+  "provenance_class": "verified",
+  "invalidated_by": "fact:5f3054083121",
+  "found": true
+ },
+ "target": {
+  "id": "decision:eu-launch",
+  "label": "Decision",
+  "type": "Decision",
+  "name": "Launch Northwind in the EU on the Frankfurt hosting partner",
+  "statement": "Proceed with the EU launch using the Frankfurt hosting partner as the primary hosting provider for EU customer data.",
+  "status": "POTENTIALLY_STALE",
+  "review_status": "NEEDS_REVIEW",
+  "made_at": "2026-02-02T08:30:00Z",
+  "created_at": "2026-02-02T08:30:00Z",
+  "recorded_at": "2026-02-02T08:30:00Z",
+  "decision_key": "eu-launch",
+  "previous_status": "ACTIVE",
+  "stale_reason": "'Launch Northwind in the EU on the Frankfurt hosting partner' assumes 'EU data residency is contractually enforceable in Frankfurt', which is supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (changed). Review the decision's continued validity. Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+  "stale_since": "2026-02-20T08:15:00Z",
+  "stale_cause_fact_id": "fact:frankfurt-partner-compliance-valid",
+  "stale_certainty": "potential",
+  "last_evaluated_at": "2026-02-20T08:15:00Z",
+  "stale_alert_ids": [
+   "alert:befe6bd9fe49"
+  ],
+  "found": true
+ },
+ "path_count": 4,
+ "paths": [
+  {
+   "nodes": [
+    "fact:frankfurt-partner-compliance-valid",
+    "decision:eu-launch"
+   ],
+   "rels": [
+    "STALED"
+   ],
+   "length": 1,
+   "steps": [
+    {
+     "src": "fact:frankfurt-partner-compliance-valid",
+     "rel": "STALED",
+     "dst": "decision:eu-launch",
+     "src_name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+     "dst_name": "Launch Northwind in the EU on the Frankfurt hosting partner",
+     "src_label": "Fact",
+     "dst_label": "Decision",
+     "props": {
+      "at": "2026-02-20T08:15:00Z",
+      "reason": "'Launch Northwind in the EU on the Frankfurt hosting partner' assumes 'EU data residency is contractually enforceable in Frankfurt', which is supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (changed). Review the decision's continued validity. Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+      "certainty": "potential",
+      "depth": 0
+     }
+    }
+   ],
+   "narrative": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12. -> -[STALED]-> Launch Northwind in the EU on the Frankfurt hosting partner"
+  },
+  {
+   "nodes": [
+    "assumption:data-residency-eu",
+    "fact:frankfurt-partner-compliance-valid",
+    "assumption:data-residency-eu"
+   ],
+   "rels": [
+    "SUPPORTED_BY",
+    "ASSUMES"
+   ],
+   "length": 2,
+   "steps": [
+    {
+     "src": "assumption:data-residency-eu",
+     "rel": "SUPPORTED_BY",
+     "dst": "fact:frankfurt-partner-compliance-valid",
+     "src_name": "EU data residency is contractually enforceable in Frankfurt",
+     "dst_name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+     "src_label": "Assumption",
+     "dst_label": "Fact",
+     "props": {
+      "at": "2026-02-02T08:30:00Z",
+      "recorded_at": "2026-02-02T08:30:00Z",
+      "note": "Supporting fact recorded at assumption creation."
+     }
+    },
+    {
+     "src": "decision:eu-launch",
+     "rel": "ASSUMES",
+     "dst": "assumption:data-residency-eu",
+     "src_name": "Launch Northwind in the EU on the Frankfurt hosting partner",
+     "dst_name": "EU data residency is contractually enforceable in Frankfurt",
+     "src_label": "Decision",
+     "dst_label": "Assumption",
+     "props": {
+      "at": "2026-02-02T08:30:00Z",
+      "recorded_at": "2026-02-02T08:30:00Z"
+     }
+    }
+   ],
+   "narrative": "EU data residency is contractually enforceable in Frankfurt -> -[SUPPORTED_BY]-> Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12. -> -[ASSUMES]-> EU data residency is contractually enforceable in Frankfurt"
+  },
+  {
+   "nodes": [
+    "fact:frankfurt-partner-compliance-valid",
+    "decision:hiring-eu-support",
+    "decision:eu-launch"
+   ],
+   "rels": [
+    "STALED",
+    "DEPENDS_ON"
+   ],
+   "length": 2,
+   "steps": [
+    {
+     "src": "fact:frankfurt-partner-compliance-valid",
+     "rel": "STALED",
+     "dst": "decision:hiring-eu-support",
+     "src_name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+     "dst_name": "Hire six EU support engineers in Q3",
+     "src_label": "Fact",
+     "dst_label": "Decision",
+     "props": {
+      "at": "2026-02-20T08:15:00Z",
+      "reason": "'Hire six EU support engineers in Q3' depends on 'Launch Northwind in the EU on the Frankfurt hosting partner', which assumes 'EU data residency is contractually enforceable in Frankfurt' supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (1 hop(s) away). Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+      "certainty": "potential",
+      "depth": 1
+     }
+    },
+    {
+     "src": "decision:hiring-eu-support",
+     "rel": "DEPENDS_ON",
+     "dst": "decision:eu-launch",
+     "src_name": "Hire six EU support engineers in Q3",
+     "dst_name": "Launch Northwind in the EU on the Frankfurt hosting partner",
+     "src_label": "Decision",
+     "dst_label": "Decision",
+     "props": {
+      "at": "2026-02-02T08:30:00Z",
+      "recorded_at": "2026-02-02T08:30:00Z",
+      "reason": "Recorded as a dependency in the launch planning documents."
+     }
+    }
+   ],
+   "narrative": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12. -> -[STALED]-> Hire six EU support engineers in Q3 -> -[DEPENDS_ON]-> Launch Northwind in the EU on the Frankfurt hosting partner"
+  },
+  {
+   "nodes": [
+    "fact:frankfurt-partner-compliance-valid",
+    "decision:pricing-eu",
+    "decision:eu-launch"
+   ],
+   "rels": [
+    "STALED",
+    "DEPENDS_ON"
+   ],
+   "length": 2,
+   "steps": [
+    {
+     "src": "fact:frankfurt-partner-compliance-valid",
+     "rel": "STALED",
+     "dst": "decision:pricing-eu",
+     "src_name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+     "dst_name": "Adopt the EU pricing tier aligned to the Frankfurt cost base",
+     "src_label": "Fact",
+     "dst_label": "Decision",
+     "props": {
+      "at": "2026-02-20T08:15:00Z",
+      "reason": "'Adopt the EU pricing tier aligned to the Frankfurt cost base' depends on 'Launch Northwind in the EU on the Frankfurt hosting partner', which assumes 'EU data residency is contractually enforceable in Frankfurt' supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (1 hop(s) away). Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+      "certainty": "potential",
+      "depth": 1
+     }
+    },
+    {
+     "src": "decision:pricing-eu",
+     "rel": "DEPENDS_ON",
+     "dst": "decision:eu-launch",
+     "src_name": "Adopt the EU pricing tier aligned to the Frankfurt cost base",
+     "dst_name": "Launch Northwind in the EU on the Frankfurt hosting partner",
+     "src_label": "Decision",
+     "dst_label": "Decision",
+     "props": {
+      "at": "2026-02-02T08:30:00Z",
+      "recorded_at": "2026-02-02T08:30:00Z",
+      "reason": "Recorded as a dependency in the launch planning documents."
+     }
+    }
+   ],
+   "narrative": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12. -> -[STALED]-> Adopt the EU pricing tier aligned to the Frankfurt cost base -> -[DEPENDS_ON]-> Launch Northwind in the EU on the Frankfurt hosting partner"
+  }
+ ],
+ "reason": "4 simple relationship path(s) found.",
+ "generated_at": "2026-10-16T03:52:46Z"
+}

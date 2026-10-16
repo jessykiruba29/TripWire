@@ -1,0 +1,70 @@
+/* Header status cluster and the rail tab container. */
+
+.header__status {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  padding-right: var(--sp-2);
+  border-right: 1px solid var(--border);
+  margin-right: var(--sp-1);
+}
+
+@media (max-width: 900px) {
+  .header__status {
+    border-right: none;
+    padding-right: 0;
+  }
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.rail__panel {
+  flex: 1 1 auto;
+  overflow: auto;
+  min-height: 0;
+  padding: var(--sp-3);
+}
+
+.rail__panel:focus {
+  outline: none;
+}
+
+@media (max-width: 1180px) {
+  .rail__panel {
+    overflow: visible;
+  }
+}
+
+.boot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  min-height: 60vh;
+  padding: var(--sp-6);
+  text-align: center;
+}
+
+.boot__mark {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.boot__title {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.boot__text {
+  color: var(--ink-muted);
+  max-width: 60ch;
+}

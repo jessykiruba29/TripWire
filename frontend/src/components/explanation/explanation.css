@@ -1,0 +1,221 @@
+/* Explanation panel: the causal chain, rendered as a vertical stepper. */
+
+.expl__chain {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.expl__chain-step {
+  display: flex;
+  flex-direction: column;
+}
+
+.expl__hop {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-left: 10px;
+  min-height: 34px;
+}
+
+.expl__hop--start {
+  min-height: 20px;
+}
+
+.expl__hop-line {
+  width: 2px;
+  align-self: stretch;
+  background: linear-gradient(to bottom, var(--border-strong), var(--brand));
+  border-radius: 2px;
+  flex: none;
+}
+
+.expl__hop-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.expl__hop-label .mono {
+  color: var(--brand-ink);
+  font-weight: 620;
+  background: var(--brand-soft);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+}
+
+.expl__chain-node {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.expl__chain-node:hover {
+  border-color: var(--brand);
+  background: var(--surface-2);
+}
+
+.expl__chain-node[data-on-chain='true'] {
+  border-color: #c6d5f7;
+}
+
+.expl__chain-label {
+  display: block;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.expl__narration {
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--surface-2);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.expl__narration ol {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.expl__reasons {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.expl__compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+@media (max-width: 760px) {
+  .expl__compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .expl__arrow {
+    transform: rotate(90deg);
+    justify-self: center;
+  }
+}
+
+.expl__compare-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  height: 100%;
+}
+
+.expl__compare-card--new {
+  border-color: #bcdff0;
+  background: var(--signal-info-soft);
+}
+
+.expl__compare-card--old {
+  border-color: #f3c3bd;
+  background: var(--signal-critical-soft);
+}
+
+.expl__arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--signal-critical);
+}
+
+.expl__assumption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-radius: var(--radius);
+  border: 1px solid #f0d8a8;
+  background: var(--signal-warning-soft);
+  align-items: flex-start;
+}
+
+.expl__assumption-meter {
+  display: inline-flex;
+  min-width: 110px;
+}
+
+.expl__list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--fs-sm);
+}
+
+.expl__list--cards {
+  padding-left: 0;
+  list-style: none;
+}
+
+.expl__list--cards > li {
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.expl__list--cards > li + li {
+  margin-top: var(--sp-2);
+}
+
+.expl__person,
+.expl__source {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--brand-ink);
+  font-weight: 620;
+  font-size: var(--fs-base);
+}
+
+.expl__source {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  color: var(--ink);
+}
+
+.expl__source:hover .strong,
+.expl__person:hover {
+  color: var(--brand);
+}

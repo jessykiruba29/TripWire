@@ -1,0 +1,10 @@
+{
+ "status": 404,
+ "body": {
+  "error": "not_found",
+  "message": "decision 'decision:does-not-exist' does not exist",
+  "details": {
+   "decision_id": "decision:does-not-exist"
+  }
+ }
+}

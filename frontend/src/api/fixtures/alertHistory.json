@@ -1,0 +1,20 @@
+{
+ "alert_id": "alert:21909486f31e",
+ "status": "NEEDS_REVIEW",
+ "history": [
+  {
+   "event_id": "event:alert-status-change:009cd3c46c26",
+   "event_type": "ALERT_STATUS_CHANGE",
+   "at": "2026-02-20T08:15:00Z",
+   "from_status": "NEW",
+   "to_status": "NEEDS_REVIEW",
+   "actor_id": null,
+   "summary": "Alert alert:21909486f31e moved from NEW to NEEDS_REVIEW: Routed to reviewers after a verified contradiction.",
+   "note": "Routed to reviewers after a verified contradiction."
+  }
+ ],
+ "previous_status": "NEW",
+ "created_at": "2026-02-20T08:15:00Z",
+ "updated_at": "2026-02-20T08:15:00Z",
+ "occurrences": 2
+}

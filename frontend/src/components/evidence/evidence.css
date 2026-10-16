@@ -1,0 +1,255 @@
+/*
+ * Evidence panel styles — namespaced `.ev-*`.
+ *
+ * Only the shapes this folder owns live here. Colour, type scale, spacing and the
+ * shared class vocabulary (.quote, .list, .chip, .badge, .stack, .cluster, …) come
+ * from styles/global.css and styles/tokens.css and are never restyled here.
+ */
+
+/* ----------------------------------------------------------------- source list */
+
+.ev-sources {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ev-sources__item {
+  min-width: 0;
+}
+
+.ev-sources__item + .ev-sources__item {
+  border-top: 1px solid var(--border);
+}
+
+.ev-sources__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ev-sources__row:hover {
+  background: var(--surface-2);
+}
+
+.ev-sources__row:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+}
+
+/* Selected state is announced with aria-pressed and echoed visually, never by colour alone. */
+.ev-sources__row[aria-pressed='true'] {
+  background: var(--brand-soft);
+  border-left-color: var(--brand);
+}
+
+.ev-sources__row--static {
+  cursor: default;
+}
+
+.ev-sources__row--static:hover {
+  background: transparent;
+}
+
+.ev-sources__head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.ev-sources__title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ev-sources__time {
+  margin-left: auto;
+}
+
+.ev-sources__byline {
+  margin: 0;
+}
+
+.ev-sources__excerpt {
+  margin: 0;
+}
+
+.ev-sources__foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* ----------------------------------------------------------------- source card */
+
+.ev-card__bitemporal {
+  margin: 0;
+}
+
+/* Verbatim text: newlines in the recorded source are preserved, never reflowed away. */
+.ev-verbatim {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ev-links__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.ev-links__label {
+  font-size: var(--fs-2xs);
+  font-weight: 660;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.ev-links__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+}
+
+.ev-chip {
+  gap: var(--sp-1);
+  max-width: 100%;
+}
+
+.ev-chip__type {
+  color: var(--ink-faint);
+}
+
+/* A clickable chip is a real button, so it needs the button reset. */
+button.ev-chip {
+  font: inherit;
+  color: inherit;
+}
+
+button.ev-chip:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------- provenance chain */
+
+.ev-chain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ev-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  min-width: 0;
+}
+
+.ev-step + .ev-step {
+  border-top: 1px dashed var(--border);
+}
+
+.ev-step__marker {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+}
+
+/* Each level keeps its own tone so the chain reads as four distinct stages. */
+.ev-step--original_source .ev-step__marker {
+  border-color: var(--signal-info);
+  color: var(--signal-info);
+}
+
+.ev-step--extracted_claim .ev-step__marker {
+  border-color: var(--brand);
+  color: var(--brand-ink);
+}
+
+.ev-step--system_interpretation .ev-step__marker {
+  border-color: var(--signal-warning);
+  background: var(--signal-warning-soft);
+  color: var(--signal-warning);
+}
+
+.ev-step--business_decision .ev-step__marker {
+  border-color: var(--signal-ok);
+  color: var(--signal-ok);
+}
+
+.ev-step__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.ev-step__head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.ev-step__desc,
+.ev-step__label,
+.ev-step__note,
+.ev-step__meta {
+  margin: 0;
+}
+
+.ev-step__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+.ev-step__confidence {
+  max-width: 320px;
+}
+
+/*
+ * The machine-derived level is tinted across the whole body, not just its badge,
+ * so a Tripwire conclusion can never be mistaken for a sentence a person wrote.
+ */
+.ev-step--machine .ev-step__body {
+  border-left: 3px solid var(--signal-warning);
+  border-radius: var(--radius);
+  background: var(--signal-warning-soft);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.ev-step--machine .ev-step__machine-note {
+  color: var(--signal-warning);
+  font-weight: 600;
+}

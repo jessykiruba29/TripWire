@@ -1,0 +1,45 @@
+{
+ "source": {
+  "id": "document:meeting-note:nwl-mn-001",
+  "label": "Document",
+  "type": "Document",
+  "name": "Meeting notes: EU Launch Go/No-Go",
+  "source_system": "meeting_note",
+  "external_id": "NWL-MN-001",
+  "doc_type": "meeting_note",
+  "title": "Meeting notes: EU Launch Go/No-Go",
+  "text": "Go/no-go review for the EU launch. Residency controls verified; capacity confirmed. The single open risk is the partner's EU certification renewal timing. Launch remains conditional on the data-residency assumption holding.",
+  "channel": null,
+  "timestamp": "2026-02-11T17:10:00Z",
+  "recorded_at": "2026-02-11T17:10:00Z",
+  "source_ref": "meeting_note:NWL-MN-001",
+  "confidence": 0.93,
+  "status": null,
+  "author_id": "person:priya-raman"
+ },
+ "states": [
+  {
+   "id": "fact:frankfurt-partner-compliance-valid",
+   "label": "Fact",
+   "type": "Fact",
+   "name": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+   "subject_id": "system:frankfurt-hosting-partner",
+   "subject_name": "Frankfurt Hosting Partner",
+   "attribute": "compliance_status",
+   "value": "valid",
+   "statement": "Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.",
+   "valid_from": "2025-04-01T00:00:00Z",
+   "valid_to": "2026-02-20T08:15:00Z",
+   "recorded_at": "2026-01-12T10:05:00Z",
+   "recorded_to": "2026-02-20T08:15:00Z",
+   "confidence": 0.95,
+   "verified": true,
+   "status": "ACTIVE",
+   "review_status": "AUTO_ACCEPTED",
+   "source_ref": "slack:#data-compliance/2026-01-12",
+   "provenance_class": "verified",
+   "invalidated_by": "fact:5f3054083121"
+  }
+ ],
+ "states_count": 1
+}

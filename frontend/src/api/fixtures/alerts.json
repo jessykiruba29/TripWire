@@ -1,0 +1,167 @@
+{
+ "total": 2,
+ "count": 2,
+ "limit": 50,
+ "offset": 0,
+ "status_counts": {
+  "NEEDS_REVIEW": 8
+ },
+ "alerts": [
+  {
+   "id": "alert:21909486f31e",
+   "label": "Alert",
+   "type": "Alert",
+   "name": "Pricing v2: potential impact from a change to 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.'",
+   "status": "NEEDS_REVIEW",
+   "severity": "medium",
+   "certainty": "potential",
+   "confidence": 0.4,
+   "title": "Pricing v2: potential impact from a change to 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.'",
+   "summary": "'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' changed. 'Pricing v2' depends on assumption:data-residency-eu. Independent supporting evidence exists, so this is flagged for review rather than declared stale.",
+   "reason": "'Pricing v2' depends on 'Launch Northwind in the EU on the Frankfurt hosting partner', which assumes 'EU data residency is contractually enforceable in Frankfurt' supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (2 hop(s) away). Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+   "dedupe_key": "fact:frankfurt-partner-compliance-valid|fact:5f3054083121|project:pricing-v2",
+   "old_fact_id": "fact:frankfurt-partner-compliance-valid",
+   "new_fact_id": "fact:5f3054083121",
+   "entity_id": "project:pricing-v2",
+   "entity_label": "Project",
+   "entity_name": "Pricing v2",
+   "attribute": "compliance_status",
+   "trigger_assumption_id": "assumption:data-residency-eu",
+   "path_nodes": [
+    "fact:frankfurt-partner-compliance-valid",
+    "assumption:data-residency-eu",
+    "decision:eu-launch",
+    "decision:pricing-eu",
+    "project:pricing-v2"
+   ],
+   "path_rels": [
+    "SUPPORTED_BY",
+    "ASSUMES",
+    "DEPENDS_ON",
+    "IMPACTS"
+   ],
+   "source_refs": [
+    "meeting_note:NWL-MN-001",
+    "prd:NWL-PRD-001",
+    "prd:NWL-PRD-003",
+    "slack:#eu-launch/2026-02-03",
+    "slack:#data-compliance/2026-01-12",
+    "meeting_note:NWL-MN-002",
+    "prd:NWL-PRD-002",
+    "slack:#data-compliance/2026-01-20"
+   ],
+   "evidence_fact_ids": [
+    "fact:frankfurt-partner-compliance-valid",
+    "fact:frankfurt-partner-soc2-attestation-valid"
+   ],
+   "certainty_sources": [
+    "fact:frankfurt-partner-soc2-attestation-valid"
+   ],
+   "created_at": "2026-02-20T08:15:00Z",
+   "recorded_at": "2026-02-20T08:15:00Z",
+   "updated_at": "2026-02-20T08:15:00Z",
+   "occurrences": 2,
+   "review_status": "NEEDS_REVIEW",
+   "notified_externally": false,
+   "certainty_status": "potential",
+   "reviewers": [
+    "person:raj-patel",
+    "person:sofia-marchetti",
+    "person:tomas-silva"
+   ],
+   "reviewers_assigned_at": "2026-10-16T03:51:32Z",
+   "previous_status": "NEW",
+   "review_note": "Routed to reviewers after a verified contradiction.",
+   "last_seen_at": "2026-02-20T08:15:00Z",
+   "affected": [
+    {
+     "entity_id": "project:pricing-v2",
+     "entity_label": "Project",
+     "entity_name": "Pricing v2",
+     "certainty": "potential",
+     "confidence": 0.4,
+     "reason": "'Pricing v2' depends on 'Launch Northwind in the EU on the Frankfurt hosting partner', which assumes 'EU data residency is contractually enforceable in Frankfurt' supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (2 hop(s) away). Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+     "status": "ACTIVE"
+    }
+   ]
+  },
+  {
+   "id": "alert:69b70030d292",
+   "label": "Alert",
+   "type": "Alert",
+   "name": "Q3 Hiring Plan: potential impact from a change to 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.'",
+   "status": "NEEDS_REVIEW",
+   "severity": "medium",
+   "certainty": "potential",
+   "confidence": 0.4,
+   "title": "Q3 Hiring Plan: potential impact from a change to 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.'",
+   "summary": "'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' changed. 'Q3 Hiring Plan' depends on assumption:data-residency-eu. Independent supporting evidence exists, so this is flagged for review rather than declared stale.",
+   "reason": "'Q3 Hiring Plan' depends on 'Launch Northwind in the EU on the Frankfurt hosting partner', which assumes 'EU data residency is contractually enforceable in Frankfurt' supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (2 hop(s) away). Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+   "dedupe_key": "fact:frankfurt-partner-compliance-valid|fact:5f3054083121|project:q3-hiring-plan",
+   "old_fact_id": "fact:frankfurt-partner-compliance-valid",
+   "new_fact_id": "fact:5f3054083121",
+   "entity_id": "project:q3-hiring-plan",
+   "entity_label": "Project",
+   "entity_name": "Q3 Hiring Plan",
+   "attribute": "compliance_status",
+   "trigger_assumption_id": "assumption:data-residency-eu",
+   "path_nodes": [
+    "fact:frankfurt-partner-compliance-valid",
+    "assumption:data-residency-eu",
+    "decision:eu-launch",
+    "decision:hiring-eu-support",
+    "project:q3-hiring-plan"
+   ],
+   "path_rels": [
+    "SUPPORTED_BY",
+    "ASSUMES",
+    "DEPENDS_ON",
+    "IMPACTS"
+   ],
+   "source_refs": [
+    "meeting_note:NWL-MN-001",
+    "prd:NWL-PRD-001",
+    "prd:NWL-PRD-003",
+    "slack:#eu-launch/2026-02-03",
+    "slack:#data-compliance/2026-01-12",
+    "meeting_note:NWL-MN-002",
+    "prd:NWL-PRD-002",
+    "slack:#data-compliance/2026-01-20"
+   ],
+   "evidence_fact_ids": [
+    "fact:frankfurt-partner-compliance-valid",
+    "fact:frankfurt-partner-soc2-attestation-valid"
+   ],
+   "certainty_sources": [
+    "fact:frankfurt-partner-soc2-attestation-valid"
+   ],
+   "created_at": "2026-02-20T08:15:00Z",
+   "recorded_at": "2026-02-20T08:15:00Z",
+   "updated_at": "2026-02-20T08:15:00Z",
+   "occurrences": 2,
+   "review_status": "NEEDS_REVIEW",
+   "notified_externally": false,
+   "certainty_status": "potential",
+   "reviewers": [
+    "person:elena-novak",
+    "person:jonas-berg",
+    "person:yuki-tanaka"
+   ],
+   "reviewers_assigned_at": "2026-10-16T03:51:32Z",
+   "previous_status": "NEW",
+   "review_note": "Routed to reviewers after a verified contradiction.",
+   "last_seen_at": "2026-02-20T08:15:00Z",
+   "affected": [
+    {
+     "entity_id": "project:q3-hiring-plan",
+     "entity_label": "Project",
+     "entity_name": "Q3 Hiring Plan",
+     "certainty": "potential",
+     "confidence": 0.4,
+     "reason": "'Q3 Hiring Plan' depends on 'Launch Northwind in the EU on the Frankfurt hosting partner', which assumes 'EU data residency is contractually enforceable in Frankfurt' supported by 'Frankfurt Hosting Partner holds a current EU compliance certification (DE-CMP-4471), verified on 2026-01-12.' (2 hop(s) away). Independent evidence still supports the assumption ('fact:frankfurt-partner-soc2-attestation-valid'), so this is flagged as potentially affected and requires human review before any status change.",
+     "status": "ACTIVE"
+    }
+   ]
+  }
+ ]
+}

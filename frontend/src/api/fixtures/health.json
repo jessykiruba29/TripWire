@@ -1,0 +1,14 @@
+{
+ "status": "ok",
+ "store": {
+  "backend": "memory",
+  "ok": true,
+  "nodes": 151,
+  "edges": 438
+ },
+ "configured_backend": "memory",
+ "active_backend": "memory",
+ "seeded": true,
+ "llm_enabled": false,
+ "checked_at": "2026-10-16T03:51:32Z"
+}

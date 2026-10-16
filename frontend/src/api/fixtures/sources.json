@@ -1,0 +1,44 @@
+{
+ "total": 61,
+ "count": 2,
+ "limit": 5,
+ "offset": 0,
+ "sources": [
+  {
+   "id": "document:meeting-note:nwl-mn-001",
+   "label": "Document",
+   "type": "Document",
+   "name": "Meeting notes: EU Launch Go/No-Go",
+   "source_system": "meeting_note",
+   "external_id": "NWL-MN-001",
+   "doc_type": "meeting_note",
+   "title": "Meeting notes: EU Launch Go/No-Go",
+   "text": "Go/no-go review for the EU launch. Residency controls verified; capacity confirmed. The single open risk is the partner's EU certification renewal timing. Launch remains conditional on the data-residency assumption holding.",
+   "channel": null,
+   "timestamp": "2026-02-11T17:10:00Z",
+   "recorded_at": "2026-02-11T17:10:00Z",
+   "source_ref": "meeting_note:NWL-MN-001",
+   "confidence": 0.93,
+   "status": null,
+   "author_id": "person:priya-raman"
+  },
+  {
+   "id": "document:meeting-note:nwl-mn-002",
+   "label": "Document",
+   "type": "Document",
+   "name": "Meeting notes: Frankfurt Partner Quarterly Review",
+   "source_system": "meeting_note",
+   "external_id": "NWL-MN-002",
+   "doc_type": "meeting_note",
+   "title": "Meeting notes: Frankfurt Partner Quarterly Review",
+   "text": "Quarterly technical review with the partner. DR test passed at a four-hour RTO, certificate rotation caused a short failover, and the compliance certification renewal is tracked separately from the SOC 2 attestation. Actions assigned to Jonas Berg.",
+   "channel": null,
+   "timestamp": "2026-02-18T16:00:00Z",
+   "recorded_at": "2026-02-18T16:00:00Z",
+   "source_ref": "meeting_note:NWL-MN-002",
+   "confidence": 0.9,
+   "status": null,
+   "author_id": "person:jonas-berg"
+  }
+ ]
+}

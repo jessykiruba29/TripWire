@@ -1,0 +1,12 @@
+{
+  "name": "tripwire-mock-backend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Deterministic reference implementation of docs/API_CONTRACT.md for the Tripwire demo (Northwind Labs fixtures, simulated data)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "validate": "node validate.js"
+  }
+}

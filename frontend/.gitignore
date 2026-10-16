@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test artefacts
+coverage/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
+# Local environment / secrets — never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets.json
+
+# Editor / OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
