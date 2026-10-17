@@ -1,218 +1,386 @@
+<div align="center">
+
+
 # Tripwire
 
-**Tripwire remembers what a company's decisions were based on — and tells people when the facts underneath those decisions have changed.**
+### Decision intelligence for changing facts.
 
-Companies decide things on top of facts, assumptions, messages and documents. Facts change.
-The decisions usually don't. Tripwire closes that gap with a provenance graph:
 
-```
-Decision --ASSUMES--> Assumption --SUPPORTED_BY--> Fact --STATES--> Message / Document / Ticket
-```
 
-When new information contradicts an earlier fact, Tripwire finds the existing fact it conflicts with,
-traces every decision that rested on it, preserves both versions of the truth with bi-temporal
-history, identifies the people who actually understand the affected systems, and raises an
-**explainable** alert — with real evidence paths, never a plausible-looking guess.
+Tripwire connects decisions to the assumptions, facts, and source records behind them. When new information challenges an underlying fact, Tripwire traces the impact and gives people the evidence they need to review it.
 
-### The restraint principle
+<br>
+<img alt="Python 3.10+" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white">
+<img alt="React 18" src="https://img.shields.io/badge/React-18-149ECA?style=for-the-badge&logo=react&logoColor=white">
+<img alt="FastAPI" src="https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white">
+<img alt="Graph database" src="https://img.shields.io/badge/Graph-FalkorDB-7658E8?style=for-the-badge">
 
-Tripwire helps people *review* decisions. It never silently declares a decision invalid.
 
-In the Northwind Labs demo, a hosting partner's EU compliance certification is revoked. The EU launch
-decision that assumed EU data residency is flagged **`POTENTIALLY_STALE`**, not stale — because an
-independent SOC 2 attestation still supports the same assumption. The alert says so, cites the
-surviving evidence, and lowers its own confidence. Only an explicit human review promotes a decision
-to `STALE`.
+**Traceable knowledge · Evidence-led analysis · Human-controlled review**
+<br>
+
+
+</div>
 
 ---
 
-## Quickstart
+## Contents
 
-### Option A — fully offline (no Docker, no API keys)
+- [Why Tripwire](#why-tripwire)
+- [How it works](#how-it-works)
+- [Explore the application](#explore-the-application)
+- [Quick start](#quick-start)
+- [Run with Docker Compose](#run-with-docker-compose)
+- [Frontend modes](#frontend-modes)
+- [API reference](#api-reference)
+- [Configuration](#configuration)
+- [Architecture](#architecture)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [Project structure](#project-structure)
+- [Documentation](#documentation)
 
-The demo runs completely offline with a deterministic JSON-backed graph and rule-based extraction.
+## Why Tripwire
+
+Business decisions depend on facts and assumptions that can change after a decision is made. Those changes are easy to miss when the evidence is scattered across messages, documents, and tickets.
+
+Tripwire creates a graph of those dependencies. When new information conflicts with a recorded fact, it can show:
+
+| Question | Tripwire provides |
+|---|---|
+| What changed? | The new information and the earlier fact it challenges |
+| What may be affected? | The assumptions and decisions reachable through recorded relationships |
+| Why is it flagged? | Evidence paths, relationship context, and confidence |
+| Who can review it? | People ranked by recorded contributions to relevant systems and projects |
+| What did we know then? | A history reconstructed from recorded time, separate from real-world validity |
+
+> [!IMPORTANT]
+> Tripwire supports human review. It does not silently decide that a business decision is invalid.
+
+### A concrete example
+
+In the Northwind Labs demo, a hosting partner loses an EU compliance certification. A launch decision that depends on EU data residency is flagged for review. An independent SOC 2 attestation still supports the underlying assumption, so the impact is treated as **potentially stale** rather than automatically declared stale. The alert includes the evidence and leaves the final decision to a person.
+
+## How it works
+
+```mermaid
+flowchart LR
+    M[Messages, tickets, documents] --> F[Recorded facts]
+    F --> A[Assumptions]
+    A --> D[Decisions]
+    N[New information] --> C[Contradiction analysis]
+    C --> F
+    C --> P[Impact propagation]
+    P --> E[Evidence-backed alert]
+    E --> H[Human review]
+```
+
+The engine follows explicit graph relationships. It keeps the original fact and its history, checks alternate supporting evidence, and returns the path behind each affected entity. It does not invent missing connections.
+
+### Two clocks, kept separate
+
+Tripwire records both:
+
+- **Valid time** — when a fact applies in the world (`valid_from`, `valid_to`).
+- **Recorded time** — when Tripwire learned or changed its belief (`recorded_at`, `recorded_to`).
+
+That distinction makes it possible to ask what was believed on a past date without rewriting history using today’s graph.
+
+## Explore the application
+
+| Workspace | Purpose |
+|---|---|
+| **Command Center** | See service mode, graph size, open alerts, and decisions needing attention. |
+| **Knowledge Graph** | Search entities, explore relationships, and inspect a selected entity. |
+| **Decision Explorer** | Review decision status, dependencies, evidence, and explanation paths. |
+| **Alerts & Review** | Inspect impact, record a review note, and apply an allowed transition. |
+| **Evidence** | Read source records and follow provenance chains. |
+| **Experts** | Find people based on recorded contribution to a system or topic. |
+| **History** | Inspect recorded beliefs at a chosen time and browse activity. |
+| **Scenario Lab** | Run the deterministic Frankfurt event and inspect its propagation result. |
+
+## Quick start
+
+### Requirements
+
+- Python **3.10 or later**
+- Node.js and npm for the web interface
+- Docker Compose only if using the FalkorDB stack
+
+The API and deterministic demo do not require an LLM key. The JSON-backed setup below also works without Docker.
+
+### 1. Start the API with the local JSON store
+
+From the repository root, create a virtual environment and install the backend dependencies:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-
-$env:TRIPWIRE_STORE = "json"          # offline, persistent graph at data/graph.json
-.\.venv\Scripts\python.exe -m tripwire seed
-.\.venv\Scripts\python.exe -m uvicorn tripwire.api.app:app --host 127.0.0.1 --port 8000
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
-Open <http://127.0.0.1:8000/docs> for the interactive API, or run the headline scenario from the CLI:
+Choose the JSON store, seed the Northwind Labs dataset, and start the API:
 
 ```powershell
-.\.venv\Scripts\python.exe -m tripwire state
-.\.venv\Scripts\python.exe -m tripwire trigger-event frankfurt_compliance_revoked
+$env:TRIPWIRE_STORE = "json"
+python -m tripwire seed
+python -m uvicorn tripwire.api.app:app --host 127.0.0.1 --port 8000
 ```
 
-### Option B — FalkorDB (the target architecture)
+The API listens at `http://127.0.0.1:8000`. Open [`/docs`](http://127.0.0.1:8000/docs) for interactive API documentation or [`/api/health`](http://127.0.0.1:8000/api/health) to check the active backend.
+
+To try the headline event, open another terminal in the repository and activate the same virtual environment:
 
 ```powershell
-docker compose up -d falkordb
-.\.venv\Scripts\python.exe -m tripwire seed          # TRIPWIRE_STORE defaults to falkordb
-.\.venv\Scripts\python.exe -m uvicorn tripwire.api.app:app --port 8000
+python -m tripwire state
+python -m tripwire trigger-event frankfurt_compliance_revoked
 ```
 
-If FalkorDB is unreachable and `TRIPWIRE_STORE_FALLBACK` is true (the default), Tripwire logs a
-warning and falls back to the JSON store so the demo still works. `/api/health` always reports which
-backend is actually serving.
+### 2. Start the web interface
 
-### Frontend
+In a second terminal:
 
 ```powershell
 cd frontend
 npm ci
 $env:VITE_API_MODE = "live"
 $env:VITE_API_BASE_URL = "http://localhost:8000"
-npm run dev            # http://localhost:5173
+npm run dev
 ```
 
-`VITE_API_MODE` accepts `live`, `mock`, and `auto` (default). `auto` probes the backend and falls back
-to the bundled deterministic reference engine in `mock-backend/`, showing the active mode in the UI.
-Explicit `live` reports backend failures instead of masking them with mock data.
+Open the local URL printed by Vite, usually `http://localhost:5173`.
 
----
+<details>
+<summary><strong>macOS or Linux commands</strong></summary>
 
-## What is actually implemented
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+export TRIPWIRE_STORE=json
+python -m tripwire seed
+python -m uvicorn tripwire.api.app:app --host 127.0.0.1 --port 8000
+```
 
-| Area | Status |
+In another terminal:
+
+```bash
+cd frontend
+npm ci
+VITE_API_MODE=live VITE_API_BASE_URL=http://localhost:8000 npm run dev
+```
+
+</details>
+
+## Run with Docker Compose
+
+The Compose file starts FalkorDB and the API. It configures the API to seed the demo dataset on startup and to fall back to the JSON store if FalkorDB is unreachable.
+
+```bash
+docker compose up --build
+```
+
+The API is available on port `8000`; FalkorDB is exposed on port `6379`. To stop the services:
+
+```bash
+docker compose down
+```
+
+To remove the persisted FalkorDB volume as well, use `docker compose down --volumes`. This permanently deletes the local database volume.
+
+## Frontend modes
+
+The frontend’s `VITE_API_MODE` setting controls how it connects to data:
+
+| Mode | Behavior |
 |---|---|
-| Graph schema — 11 node types, 19 relationship types, documented property conventions | Implemented |
-| Stores — FalkorDB adapter, JSON-backed store, in-memory store behind one primitive interface | Implemented |
-| Knowledge ingestion — Slack / ticket / PRD / meeting-note adapters, provenance, entity resolution, dedup, review status, ingestion events | Implemented |
-| Contradiction detection — 6-way classification with typed evidence, confidence and explicit rules | Implemented |
-| Staleness propagation — cycle-safe, deduplicated, bounded-depth, with real evidence paths | Implemented |
-| Bi-temporal history — `valid_from`/`valid_to` (world) vs `recorded_at`/`recorded_to` (belief) | Implemented |
-| Explanations — `explain_path`, decision/fact/alert explanations, never fabricates a path | Implemented |
-| Contribution-based expert finder + shadow org chart | Implemented |
-| Proactive alert engine — dedup, 5 statuses, history, reviewer routing | Implemented |
-| MCP server — stdio + streamable HTTP, tools call the same engine | Implemented |
-| HTTP API — FastAPI, validated models, consistent error envelope | Implemented |
-| Northwind Labs dataset — 12 people, 4 teams, 8 systems, 6 projects, 40 Slack messages, 15 tickets, 3 PRDs, 2 meeting notes, deterministic | Implemented |
-| LLM extraction + semantic comparison | Implemented, **not verified against a live provider** (no credentials in this environment) |
-| FalkorDB against a live server | Adapter implemented, **not verified live** (no Docker in this environment) |
+| `live` | Connect to `VITE_API_BASE_URL`. Connection failures are shown in the interface. |
+| `mock` | Use the bundled deterministic reference engine in `mock-backend/`. |
+| `auto` | Probe the API and fall back to the reference engine when it is unavailable. This is the default. |
 
-Honest gaps are also tracked in the follow-up sections below. Nothing in this table is claimed to
-work merely because it is described in a specification.
+For live mode, set `VITE_API_BASE_URL` to the API origin, such as `http://localhost:8000`. The interface displays the active mode so reference data is not confused with live data.
 
----
+## API reference
 
-## HTTP API at a glance
+The full contract—including response models, query parameters, error shapes, and field semantics—is documented in [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md). The running API also serves interactive OpenAPI documentation at `/docs`.
 
-Full contract: [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) (including the `label` vs `name`,
-`recorded_to` vs `valid_to`, path `edge_direction` and alert `allowed_transitions` semantics).
-
-| Route | Purpose |
+| Endpoint | Description |
 |---|---|
-| `GET /api/health` | Liveness, active/configured backend, seeded flag |
-| `GET /api/graph` · `GET /api/paths` · `GET /api/search` | Graph payload, validated relationship paths, substring search |
-| `GET /api/entities` | Every entity kind with snapshot-wide counts |
-| `GET /api/decisions` · `/api/people` · `/api/projects` · `/api/systems` · `/api/teams` · `/api/assumptions` · `/api/events` | Dedicated entity lists — `?status=`, `?q=`, `?limit=`, `?offset=` plus documented kind filters; unknown filters are 422 |
-| `GET /api/{kind}/{entity_id}` | One entity (same view as the list); unknown id → 404 envelope |
-| `GET /api/decisions/{id}/explanation` · `/dependencies?at=` · `POST .../status` | Decision reasoning and audited status changes |
-| `GET /api/alerts` · `GET /api/alerts/{id}` · `/history` · `POST .../review` | Alert feed/detail with `allowed_transitions`, append-only history, note-preserving reviews |
-| `GET /api/history/belief` · `/valid` · `/changes` | Bitemporal queries (belief time vs world time) |
-| `POST /api/demo/seed` · `/reset` · `/trigger-event` · `GET /api/demo/state` | Idempotent demo lifecycle and the Frankfurt scenario |
-| `GET /api/experts` · `POST /api/contradictions/find` · `POST /api/staleness/propagate` | Contribution-based experts, contradiction checks, propagation plans |
+| `GET /api/health` | Health, active backend, and dataset status |
+| `GET /api/graph` | Graph nodes, edges, and revision |
+| `GET /api/entities` | Entity collections and counts |
+| `GET /api/search` | Search entities by text |
+| `GET /api/decisions` | List decisions |
+| `GET /api/decisions/{id}/explanation` | Explain a decision and its evidence paths |
+| `GET /api/decisions/{id}/dependencies?at=...` | Inspect dependencies at a recorded time |
+| `POST /api/decisions/{id}/status` | Apply an audited decision status change |
+| `GET /api/alerts` | List alerts and available review transitions |
+| `GET /api/alerts/{id}` | Fetch an alert and its affected entities |
+| `GET /api/alerts/{id}/history` | Read an alert’s review history |
+| `POST /api/alerts/{id}/review` | Record an allowed review transition and note |
+| `GET /api/history/belief?at=...` | Reconstruct recorded beliefs at a transaction time |
+| `GET /api/history/valid?at=...` | Query facts valid at a real-world time |
+| `GET /api/history/changes?since=...` | Read facts and events recorded after a point in time |
+| `GET /api/experts` | Rank contributors by recorded work |
+| `POST /api/demo/trigger-event` | Run a scenario and return its propagation result |
+
+Example request:
 
 ```bash
 curl 'http://127.0.0.1:8000/api/decisions?status=ACTIVE&limit=2'
-# → {"kind": "decisions", "total": 7, "count": 2, "counts": {...}, "items": [...], ...}
 ```
 
----
-
-## Repository layout
-
-```
-graphhacks/
-  README.md  pyproject.toml  requirements.txt  requirements-dev.txt
-  Dockerfile  docker-compose.yml  .env.example
-  tripwire/                 # the backend application package
-    core/                   # schema, stores, and ALL graph reasoning
-    ingest/                 # adapters, extractors, ingestion pipeline
-    dataset/                # the deterministic Northwind Labs graph
-    api/                    # FastAPI app + routers
-    mcp_server/             # MCP tools
-    cli.py  config.py       # `python -m tripwire ...`
-  frontend/                 # React 18 + Vite + TypeScript UI
-  mock-backend/             # deterministic reference engine for offline/mock mode
-  tests/                    # pytest suite (engine, API, MCP, end-to-end)
-  docs/                     # API contract, schema, architecture, dataset, MCP
-  scripts/                  # smoke test, OpenAPI dump, local run helpers
-  data/                     # gitignored runtime state
-```
-
-`tripwire/` *is* the server package, so the project root is also the Python project root: `pytest`,
-`uvicorn`, and `docker build .` all work from the root with no extra `cd` or install step.
-
----
+The exact list filters and response envelopes are defined in the API contract; use that document as the source of truth when integrating a client.
 
 ## Configuration
 
-Secrets live only in the environment — never in source. Copy `.env.example` to `.env` (git-ignored).
+Settings are read from environment variables. The repository includes [`.env.example`](.env.example) as a starting point; keep credentials in environment configuration, not source files.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `TRIPWIRE_STORE` | `falkordb` | `falkordb`, `json`, or `memory` |
-| `TRIPWIRE_STORE_FALLBACK` | `true` | Fall back to the JSON store when FalkorDB is unreachable |
-| `TRIPWIRE_STATE_PATH` | `data/graph.json` | JSON store location |
-| `FALKOR_HOST` / `FALKOR_PORT` | `localhost` / `6379` | FalkorDB connection |
-| `FALKOR_GRAPH` | `tripwire` | Graph (namespace) name |
-| `TRIPWIRE_CORS_ORIGINS` | local dev origins | Comma-separated allowed origins — set this for any real deployment |
-| `LLM_PROVIDER` | *(unset)* | Unset means deterministic extraction only |
-| `LLM_API_KEY` / `LLM_MODEL` / `LLM_BASE_URL` | *(unset)* | OpenAI-compatible endpoint |
-| `TRIPWIRE_SEED_ON_STARTUP` | `false` | Seed the dataset when the API boots |
+| `TRIPWIRE_STORE` | `falkordb` | Select `falkordb`, `json`, or `memory`. |
+| `TRIPWIRE_STORE_FALLBACK` | `true` | Use the JSON store if FalkorDB cannot be reached. |
+| `TRIPWIRE_STATE_PATH` | `data/graph.json` | Path used by the JSON store. |
+| `FALKOR_HOST` | `localhost` | FalkorDB hostname. |
+| `FALKOR_PORT` | `6379` | FalkorDB port. |
+| `FALKOR_GRAPH` | `tripwire` | FalkorDB graph name. |
+| `TRIPWIRE_CORS_ORIGINS` | Local development origins | Comma-separated browser origins allowed by the API. |
+| `TRIPWIRE_SEED_ON_STARTUP` | `false` | Seed the demo dataset when the API starts. |
+| `LLM_PROVIDER` | Unset | Optional provider for free-text extraction. |
+| `LLM_API_KEY` | Unset | Optional provider credential. |
+| `LLM_MODEL` | Unset | Optional model identifier. |
+| `LLM_BASE_URL` | Unset | Optional OpenAI-compatible endpoint. |
 
-`LLM_PROVIDER` unset is a fully supported mode, not a degraded one: extraction falls back to the
-deterministic rules, and every extracted claim is marked `verified: false` with
-`review_status: NEEDS_REVIEW`.
+With `LLM_PROVIDER` unset, deterministic extraction is used. Claims produced by that path remain marked for review rather than being represented as verified.
 
----
+## Architecture
 
-## Tests
+```mermaid
+flowchart TB
+    UI[React + TypeScript frontend]
+    API[FastAPI routes]
+    ENGINE[Graph engine]
+    STORE[Store interface]
+    FDB[(FalkorDB)]
+    JSON[(JSON store)]
+    MEM[(In-memory store)]
+    INGEST[Ingestion adapters]
+    MCP[MCP server]
 
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+    UI --> API
+    API --> ENGINE
+    MCP --> ENGINE
+    INGEST --> ENGINE
+    ENGINE --> STORE
+    STORE --> FDB
+    STORE --> JSON
+    STORE --> MEM
 ```
 
-The suite covers graph creation and retrieval, seed idempotency and reset, ingestion and provenance,
-entity resolution, contradiction detection **and its negative cases**, staleness propagation and path
-correctness, cycles and repeated events, bi-temporal history, expert ranking, alert dedup and status
-transitions, MCP tool execution, API validation, and the complete Frankfurt scenario.
+### Backend
 
-Two properties are asserted explicitly because they are the product's whole point:
+- `tripwire/core/` contains the graph model, store abstractions, contradiction analysis, impact propagation, history, alerts, explanations, and expert ranking.
+- `tripwire/ingest/` contains source adapters and extraction pipelines for messages, tickets, PRDs, and meeting notes.
+- `tripwire/api/` exposes the engine through FastAPI routes and validated schemas.
+- `tripwire/mcp_server/` exposes engine capabilities through MCP tools.
+- `tripwire/dataset/` defines the deterministic Northwind Labs demonstration data.
 
-- an **unrelated** decision stays `ACTIVE` (no false alerts), and
-- an **alternate valid supporting fact** changes the review outcome from `confirmed` to `potential`.
+### Frontend
 
-FalkorDB integration tests skip cleanly when no server is reachable; a mock is always labelled a mock.
+The React and TypeScript application is built with Vite. It can connect to the live API or use `mock-backend/`, a deterministic reference engine used for offline demonstrations and frontend development.
 
----
+## Development
+
+### Backend tests
+
+From the repository root, install development dependencies and run pytest:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
+### Frontend checks
+
+From `frontend/`:
+
+```bash
+npm run typecheck
+npm run build
+npm test
+```
+
+Playwright end-to-end tests are available separately:
+
+```bash
+npm run e2e:install
+npm run e2e
+```
+
+The end-to-end suite uses the frontend’s configured demo flow. Run the API separately when validating live integration.
+
+## Troubleshooting
+
+<details>
+<summary><strong>The web app shows mock or reference data</strong></summary>
+
+Check `VITE_API_MODE` and `VITE_API_BASE_URL`. Use `live` mode to surface connection errors directly, and confirm that the API is reachable at the configured origin. In `auto` mode, an unavailable API causes the frontend to use its bundled reference engine.
+
+</details>
+
+<details>
+<summary><strong>The API starts with an empty graph</strong></summary>
+
+Seed the dataset with `python -m tripwire seed`, or set `TRIPWIRE_SEED_ON_STARTUP=true` before starting the API. Confirm the active store in `GET /api/health`.
+
+</details>
+
+<details>
+<summary><strong>FalkorDB cannot be reached</strong></summary>
+
+Confirm that the service is running and that `FALKOR_HOST` and `FALKOR_PORT` match its address. When `TRIPWIRE_STORE_FALLBACK=true`, the API can fall back to the JSON store; check `/api/health` to see which store is active.
+
+</details>
+
+<details>
+<summary><strong>Browser requests are blocked by CORS</strong></summary>
+
+Add the frontend origin to `TRIPWIRE_CORS_ORIGINS`. For local Vite development, this is commonly `http://localhost:5173` (or the port printed by Vite).
+
+</details>
+
+## Project structure
+
+```text
+graphhacks/
+├── tripwire/
+│   ├── api/             FastAPI application, routers, and schemas
+│   ├── core/            Graph engine, stores, and reasoning
+│   ├── dataset/         Deterministic Northwind Labs data
+│   ├── ingest/          Adapters and extraction pipelines
+│   └── mcp_server/      MCP server and tools
+├── frontend/            React, TypeScript, and Vite application
+├── mock-backend/        Offline frontend reference engine
+├── tests/               Backend test suite
+├── docs/                 API, schema, architecture, dataset, and MCP guides
+├── scripts/              Local run and development helpers
+└── data/                 Local runtime state (gitignored)
+```
 
 ## Documentation
 
-| Document | Contents |
+| Guide | Details |
 |---|---|
-| [docs/API_CONTRACT.md](docs/API_CONTRACT.md) | Endpoints, request/response shapes, error envelope, field semantics |
-| [docs/GRAPH_SCHEMA.md](docs/GRAPH_SCHEMA.md) | Node types, relationship types, property conventions, status models |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layering, the store abstraction, single-writer engine, extension points |
-| [docs/DATASET.md](docs/DATASET.md) | The Northwind Labs storyline, entities, and why each dependency exists |
-| [docs/MCP.md](docs/MCP.md) | Connecting an MCP client and invoking each tool |
+| [API contract](docs/API_CONTRACT.md) | Endpoints, schemas, validation, and field semantics |
+| [Graph schema](docs/GRAPH_SCHEMA.md) | Node types, relationship types, properties, and statuses |
+| [Architecture](docs/ARCHITECTURE.md) | Engine layers, stores, and extension points |
+| [Dataset](docs/DATASET.md) | Northwind Labs entities and scenario relationships |
+| [MCP guide](docs/MCP.md) | MCP server setup and available tools |
 
 ---
 
-## Known gaps
+<div align="center">
 
-1. **FalkorDB has never been exercised against a live server from this environment** (no Docker here).
-   The adapter, its Cypher generation and its graceful-degradation path are all implemented; the
-   live round-trip is not verified.
-2. **The LLM path has never run against a real provider** (no credentials). Request construction,
-   strict response validation and the deterministic fallback are implemented and unit-tested.
-3. **MCP tools are verified in-process**, through a real protocol client, rather than via an external
-   MCP application.
-4. **The frontend's `mock-backend/` is intentionally retained**: the Vite and TypeScript aliases
-   reference it, and it powers offline demos and tests. It is a reference engine, not a live backend.
+**Tripwire makes decision dependencies visible, so people can respond when the facts move.**
+
+</div>
