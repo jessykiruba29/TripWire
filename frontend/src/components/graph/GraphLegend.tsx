@@ -34,7 +34,7 @@ export function GraphLegend({ counts, activeTypes, onToggleType }: GraphLegendPr
   return (
     <div className="legend" data-testid="graph-legend">
       <div className="legend__group" style={{ flex: '1 1 320px' }}>
-        <span className="legend__title">Entities — click to show or hide</span>
+        <span className="legend__title">Filter by type</span>
         <div className="legend__items">
           {present.map((type) => {
             const meta = NODE_TYPE_META[type];
@@ -62,7 +62,7 @@ export function GraphLegend({ counts, activeTypes, onToggleType }: GraphLegendPr
       </div>
 
       <div className="legend__group" style={{ flex: '1 1 220px' }}>
-        <span className="legend__title">Needs attention — ring on the node</span>
+        <span className="legend__title">Review state</span>
         <div className="legend__items">
           {ATTENTION_STATES.map(({ state, ring, dashed }) => (
             <span key={state} className="legend__item" title={NODE_STATE_META[state].description}>
@@ -78,7 +78,7 @@ export function GraphLegend({ counts, activeTypes, onToggleType }: GraphLegendPr
       </div>
 
       <div className="legend__group" style={{ flex: '1 1 200px' }}>
-        <span className="legend__title">Decisive relationships</span>
+        <span className="legend__title">Key relationships</span>
         <div className="legend__items">
           {RELATION_SAMPLES.map(({ key, label, dashed }) => (
             <span key={String(key)} className="legend__item">
@@ -96,7 +96,6 @@ export function GraphLegend({ counts, activeTypes, onToggleType }: GraphLegendPr
               {label}
             </span>
           ))}
-          <span className="legend__item muted">Faint grey lines are provenance and org structure</span>
         </div>
       </div>
     </div>

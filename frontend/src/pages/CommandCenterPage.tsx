@@ -6,9 +6,8 @@
 
 import { useMemo } from 'react';
 import type { ShellContext } from '../App';
-import { Badge, Callout, EmptyState, ErrorState, Panel, PanelBody, PanelHead, Stat } from '../components/common';
-import { IconAlert, IconArrowRight, IconBolt, IconHistory, IconNetwork, IconTarget, IconUser } from '../components/common/Icons';
-import { TimelineFeed } from '../components/history/TimelineFeed';
+import { Badge, EmptyState, ErrorState, Panel, PanelBody, PanelHead, Stat } from '../components/common';
+import { IconAlert, IconArrowRight, IconTarget } from '../components/common/Icons';
 import { ALERT_STATUS_META, SEVERITY_META, decisionStatusMeta } from '../lib/vocabulary';
 import { formatRelative } from '../lib/format';
 import { Link } from '../router';
@@ -31,8 +30,6 @@ export function CommandCenterPage({ ctx }: { ctx: ShellContext }) {
         .slice(0, 4),
     [alerts],
   );
-
-  const impacts = tw.lastTrigger?.entity_impacts ?? [];
 
   return (
     <div className="cc">
@@ -161,114 +158,7 @@ export function CommandCenterPage({ ctx }: { ctx: ShellContext }) {
           </PanelBody>
         </Panel>
 
-        {/* ---------------------------------------------- latest change */}
-        <Panel className="cc__panel">
-          <PanelHead
-            icon={<IconBolt size={17} />}
-            title="Latest change propagation"
-            subtitle="Straight from the backend's last trigger result — never recomputed in the browser."
-          />
-          <PanelBody tight>
-            {!tw.lastTrigger ? (
-              <EmptyState title="No scenario has been run yet">
-                <p>Run the Frankfurt scenario to see a contradiction propagate into a decision flag and an alert.</p>
-                <p>
-                  <Link to="/scenarios" className="btn btn--primary">
-                    <IconBolt size={14} /> Open Scenario Lab
-                  </Link>
-                </p>
-              </EmptyState>
-            ) : (
-              <div className="stack stack--tight">
-                <Callout tone="info" title="A change was recorded">
-                  {tw.lastTrigger.event?.summary ?? 'The backend applied a new fact and recomputed impact.'}
-                </Callout>
-                {impacts.length > 0 ? (
-                  <ul className="cc__list">
-                    {impacts.slice(0, 5).map((impact) => (
-                      <li key={impact.id} className="cc__item">
-                        <div className="cc__item-head">
-                          <Badge tone={impact.certainty === 'confirmed' ? 'critical' : 'warning'} outline>
-                            {impact.certainty ?? impact.status}
-                          </Badge>
-                          {impact.requires_investigation ? <Badge tone="warning">investigate</Badge> : null}
-                        </div>
-                        <button
-                          type="button"
-                          className="cc__item-title cc__item-title--button"
-                          onClick={() => ctx.explainDecision(impact.id)}
-                        >
-                          {impact.label}
-                        </button>
-                        {impact.reason ? <p className="cc__item-text">{impact.reason}</p> : null}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                <div className="cc__panel-foot">
-                  <Link to="/scenarios" className="cc__link">
-                    Inspect the run <IconArrowRight size={13} />
-                  </Link>
-                  <Link to="/graph" className="cc__link">
-                    See it on the graph <IconArrowRight size={13} />
-                  </Link>
-                </div>
-              </div>
-            )}
-          </PanelBody>
-        </Panel>
-
-        {/* ---------------------------------------------- activity */}
-        <Panel className="cc__panel">
-          <PanelHead
-            icon={<IconHistory size={17} />}
-            title="Recent activity"
-            subtitle="Append-only event history recorded by the backend."
-          />
-          <PanelBody tight>
-            <TimelineFeed
-              entries={(tw.timeline.data?.events ?? []).slice(0, 6)}
-              loading={tw.timeline.loading}
-              error={tw.timeline.error}
-              onSelectEntity={ctx.inspectNode}
-              emptyTitle="No recorded activity yet"
-              limit={6}
-            />
-            <div className="cc__panel-foot">
-              <Link to="/history" className="cc__link">
-                Full history <IconArrowRight size={13} />
-              </Link>
-            </div>
-          </PanelBody>
-        </Panel>
       </div>
-
-      {/* ------------------------------------------------- entry points */}
-      <section className="cc__entries" aria-label="Investigation entry points">
-        {[
-          { to: '/graph', icon: IconNetwork, title: 'Knowledge Graph', text: 'Explore entities, relationships and downstream impact.' },
-          { to: '/decisions', icon: IconTarget, title: 'Decision Explorer', text: 'Why a decision was made, and what it rests on.' },
-          { to: '/evidence', icon: IconBolt, title: 'Evidence & Provenance', text: 'The source records behind every claim.' },
-          { to: '/experts', icon: IconUser, title: 'Expert Intelligence', text: 'Who actually has the knowledge.' },
-        ].map((entry) => (
-          <Link key={entry.to} to={entry.to} className="cc__entry">
-            <span className="cc__entry-icon" aria-hidden="true">
-              <entry.icon size={18} />
-            </span>
-            <span className="cc__entry-body">
-              <span className="cc__entry-title">{entry.title}</span>
-              <span className="cc__entry-text">{entry.text}</span>
-            </span>
-            <IconArrowRight size={15} />
-          </Link>
-        ))}
-      </section>
-
-      {!tw.isMock ? (
-        <Callout tone="info" title="Live backend">
-          Every panel on this page is answered by the running backend. Nothing here is computed in the browser.
-        </Callout>
-      ) : null}
     </div>
   );
 }

@@ -12,7 +12,7 @@
  * pushed the actual product further down the page.
  */
 
-import { useMemo, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { TripwireMark } from '../components/layout/AppHeader';
 import { Link } from '../router';
 import type { ShellContext } from '../App';
@@ -84,21 +84,23 @@ export function LandingPage({ ctx }: { ctx: ShellContext }): ReactNode {
   const alerts = tw.alerts.data?.total ?? 0;
   const atRisk = tw.affectedDecisions.length;
 
-  const modeLabel = useMemo(() => {
-    if (!tw.connection) return 'connecting';
-    return tw.isMock ? 'reference engine' : 'live backend';
-  }, [tw.connection, tw.isMock]);
-
   return (
     <div className="landing">
       <header className="landing__bar">
         <div className="landing__brand">
-          <TripwireMark size={22} />
-          <span className="landing__wordmark">Tripwire</span>
+          <TripwireMark size={28} />
+          <div className="landing__brand-copy">
+            <span className="landing__wordmark">Tripwire</span>
+          </div>
         </div>
+        <nav className="landing__nav" aria-label="Explore Tripwire">
+          <Link to="/graph">Graph</Link>
+          <Link to="/decisions">Decisions</Link>
+          <Link to="/evidence">Evidence</Link>
+        </nav>
         <span className={`landing__mode landing__mode--${tw.isMock ? 'mock' : 'live'}`}>
           <span className="landing__mode-dot" aria-hidden="true" />
-          {modeLabel}
+          {tw.isMock ? 'Demo environment' : 'Live system'}
         </span>
       </header>
 
@@ -116,7 +118,7 @@ export function LandingPage({ ctx }: { ctx: ShellContext }): ReactNode {
 
           <div className="landing__actions">
             <Link to="/command" className="landing__cta">
-              Enter Tripwire
+            Open command center
               <span className="landing__cta-arrow" aria-hidden="true">
                 →
               </span>
@@ -144,27 +146,14 @@ export function LandingPage({ ctx }: { ctx: ShellContext }): ReactNode {
 
         <section className="landing__visual">
           <OrbitDiagram />
-          <p className="landing__caption">
-            One fact changed. The path to every decision it supported is preserved.
-          </p>
+          <p className="landing__caption">A changed fact. Every decision it touches.</p>
         </section>
       </main>
 
-      <section className="landing__features" aria-label="What Tripwire does">
-        {[
-          { title: 'One graph', text: 'Facts, assumptions, decisions and people in a single constellation.' },
-          { title: 'Live provenance', text: 'Every claim traced back to the message it came from.' },
-          { title: 'Honest alerts', text: 'Impact, uncertainty and evidence — never a verdict.' },
-        ].map((feature) => (
-          <article key={feature.title} className="landing__feature">
-            <h2 className="landing__feature-title">{feature.title}</h2>
-            <p className="landing__feature-text">{feature.text}</p>
-          </article>
-        ))}
-      </section>
+      
 
       <footer className="landing__foot">
-        <span>Northwind Labs reference dataset</span>
+        <span>Northwind Labs</span>
         <span className="landing__foot-sep" aria-hidden="true">
           ·
         </span>

@@ -8,15 +8,11 @@
  */
 
 import type { ShellContext } from '../App';
-import { Panel, PanelBody, PanelHead } from '../components/common';
-import { IconLink } from '../components/common/Icons';
 import { GraphPanel } from '../components/graph/GraphPanel';
 import { NodeInspector } from '../components/inspector/NodeInspector';
 
 export function GraphPage({ ctx }: { ctx: ShellContext }) {
   const { tw } = ctx;
-
-  const hasSelection = Boolean(tw.selectedNode);
 
   return (
     <div className="graph-page">
@@ -33,12 +29,7 @@ export function GraphPage({ ctx }: { ctx: ShellContext }) {
         />
       </div>
 
-      <Panel className="graph-page__inspector">
-        <PanelHead
-          icon={<IconLink size={17} />}
-          title={hasSelection ? 'Selected entity' : 'Inspector'}
-        />
-        <PanelBody>
+      <div className="graph-page__inspector">
           <NodeInspector
             node={tw.selectedNode}
             graph={tw.graph.data}
@@ -55,8 +46,7 @@ export function GraphPage({ ctx }: { ctx: ShellContext }) {
             onShowExplanation={ctx.explainDecision}
             onShowProvenance={() => ctx.goto('/evidence')}
           />
-        </PanelBody>
-      </Panel>
+      </div>
 
       <div className="graph-page__note">
         Click any node to open its full record here on the right. Explained chains stay highlighted

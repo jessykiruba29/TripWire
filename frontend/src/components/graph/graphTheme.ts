@@ -27,7 +27,7 @@ export const PRIMARY_EDGE_COLOR: Partial<Record<GraphEdge['type'], string>> = {
   supports: '#7aa2ff',
   depends_on: '#b18cff',
   assumes: '#b18cff',
-  affects: '#4fe3c1',
+  affects: '#72bfe8',
   raised_for: '#ff8577',
   observed_by: '#ff8577',
   escalates: '#f6b95a',
@@ -80,7 +80,7 @@ export function stateRing(node: GraphNode): { color: string; dashed: boolean; wi
     case 'dismissed':
       return { color: '#8792b0', dashed: true, width: 1.2 };
     case 'resolved':
-      return { color: '#55d6a8', dashed: false, width: 1.6 };
+      return { color: '#72bfe8', dashed: false, width: 1.6 };
     default:
       return null;
   }
@@ -169,7 +169,7 @@ export function drawNode(ctx: CanvasRenderingContext2D, node: FGNode, globalScal
   if (isSelected || onPath) {
     ctx.beginPath();
     ctx.arc(x, y, r + (isSelected ? 7 : 4.5), 0, Math.PI * 2);
-    ctx.fillStyle = isSelected ? 'rgba(139,147,255,0.30)' : 'rgba(139,147,255,0.16)';
+    ctx.fillStyle = isSelected ? 'rgba(145,164,232,0.22)' : 'rgba(145,164,232,0.11)';
     ctx.fill();
   }
 
@@ -203,7 +203,7 @@ export function drawNode(ctx: CanvasRenderingContext2D, node: FGNode, globalScal
 
   if (isSelected) {
     traceShape(ctx, node.type, x, y, r + (ring ? 5.5 : 3.5));
-    ctx.strokeStyle = '#8b93ff';
+    ctx.strokeStyle = '#b7c8ff';
     ctx.lineWidth = 2;
     ctx.setLineDash([]);
     ctx.stroke();

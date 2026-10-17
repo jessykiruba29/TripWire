@@ -8,9 +8,8 @@
 
 import type { ApiConnection } from '../../api';
 import type { HealthResponse } from '../../api/types';
-import { formatDateTime } from '../../lib/format';
-import { Badge, Button, Chip } from '../common';
-import { IconBolt, IconRefresh } from '../common/Icons';
+import { Button } from '../common';
+import { IconRefresh } from '../common/Icons';
 import './layout.css';
 
 export function TripwireMark({ size = 30 }: { size?: number }) {
@@ -58,7 +57,7 @@ export function AppHeader({
     <header className="app__header">
       <div className="header">
         <div className="header__brand">
-          <TripwireMark />
+          <TripwireMark size={28} />
           <div className="header__names">
             <div className="header__title">
               <span className="header__wordmark">Tripwire</span>
@@ -70,32 +69,10 @@ export function AppHeader({
         <div className="header__spacer" />
 
         <div className="header__actions">
-          <div className="header__status">
-            {connection ? (
-              <Badge
-                tone={connection.resolvedMode === 'mock' ? 'warning' : 'ok'}
-                dot
-                title={connection.reason}
-              >
-                {connection.resolvedMode === 'mock' ? 'Mock mode' : 'Live backend'}
-              </Badge>
-            ) : (
-              <Badge tone="neutral">Connecting…</Badge>
-            )}
-            {health ? (
-              <Chip title="Mode string reported by GET /api/health, shown verbatim">
-                {health.mode}
-              </Chip>
-            ) : null}
-            {health ? (
-              <span className="tiny muted nowrap" title={`Health sampled ${formatDateTime(health.time)}`}>
-                {health.counts.nodes} entities · {health.counts.edges} relationships
-              </span>
-            ) : null}
-          </div>
+        
 
           <Button onClick={onRunScenario} variant="primary">
-            <IconBolt size={14} />
+            
             {scenarioApplied ? 'Re-run scenario' : 'Run Frankfurt scenario'}
           </Button>
           <Button onClick={onReset} busy={resetBusy}>
@@ -108,12 +85,12 @@ export function AppHeader({
         </div>
       </div>
 
-      <ModeBanner connection={connection} health={health} />
+      <ModeBanner connection={connection} />
     </header>
   );
 }
 
-export function ModeBanner({ connection, health }: { connection: ApiConnection | null; health: HealthResponse | null }) {
+export function ModeBanner({ connection }: { connection: ApiConnection | null }) {
   if (!connection) return null;
 
   if (connection.resolvedMode === 'mock') {
@@ -130,16 +107,7 @@ export function ModeBanner({ connection, health }: { connection: ApiConnection |
     );
   }
 
-  if (health && health.mode !== 'production' && health.mode !== 'live') {
-    return (
-      <div className="banner banner--info" role="status">
-        <span className="banner__label">BACKEND MODE</span>
-        <span className="banner__text">
-          {health.mode} · {health.dataset.name}
-        </span>
-      </div>
-    );
-  }
+ 
 
   return null;
 }

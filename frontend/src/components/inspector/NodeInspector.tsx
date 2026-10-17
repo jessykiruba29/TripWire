@@ -9,7 +9,7 @@
 import { useMemo } from 'react';
 import type { DecisionDetail, FactDetail, GraphNode, GraphResponse, PersonDetail } from '../../api/types';
 import { groupByEdgeType, indexNodes, neighboursOf, type PathHighlight } from '../../lib/graph';
-import { describeBitemporal, formatDateTime, formatDate, formatPercent, truncate } from '../../lib/format';
+import { describeBitemporal, formatDateTime, formatDate, truncate } from '../../lib/format';
 import {
   EDGE_TYPE_META,
   NODE_STATE_META,
@@ -20,13 +20,11 @@ import {
 } from '../../lib/vocabulary';
 import {
   Badge,
-  Chip,
   EmptyState,
   KeyValue,
   Meter,
   Panel,
   PanelBody,
-  PanelFoot,
   PanelHead,
   Section,
   SkeletonRows,
@@ -76,10 +74,7 @@ export function NodeInspector({
       <Panel>
         <PanelBody>
           <EmptyState title="Nothing selected" icon={<IconLink size={26} />}>
-            <p>
-              Select any entity in the graph to see what it is, what it rests on, and exactly how it is connected to
-              everything else.
-            </p>
+            <p>Select a node to inspect its summary and connections.</p>
           </EmptyState>
         </PanelBody>
       </Panel>
@@ -123,21 +118,19 @@ export function NodeInspector({
 
           <KeyValue
             rows={[
-              { k: 'Id', v: <Chip title={node.id}>{node.id}</Chip> },
+              { k: 'Connections', v: <span className="mono">{node.degree ?? links.length}</span> },
               {
                 k: 'Confidence',
                 v: node.confidence === null ? <span className="muted">Not recorded</span> : (
                   <Meter value={node.confidence} label={`Confidence in ${node.label}`} />
                 ),
               },
-              { k: 'Connections', v: <span className="mono">{node.degree ?? links.length}</span> },
-              {
-                k: 'True in the world',
-                v: `${formatDate(node.valid_from)} → ${node.valid_to ? formatDate(node.valid_to) : 'open'}`,
-              },
-              { k: 'Known to Tripwire since', v: formatDateTime(node.recorded_at) },
             ]}
           />
+
+          <details className="insp__details">
+            <summary>Connections &amp; full record <span>{links.length}</span></summary>
+            <div className="insp__details-body">
 
           {node.type === 'fact' ? (
             <p className="tiny muted">{describeBitemporal(node.valid_from, node.recorded_at)}</p>
@@ -380,17 +373,11 @@ export function NodeInspector({
               </div>
             </Section>
           ) : null}
+            </div>
+          </details>
         </div>
       </PanelBody>
 
-      {node.confidence !== null ? (
-        <PanelFoot>
-          <span>
-            Confidence <span className="mono">{formatPercent(node.confidence)}</span> — reported by the backend, not
-            computed in the UI.
-          </span>
-        </PanelFoot>
-      ) : null}
     </Panel>
   );
 }

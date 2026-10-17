@@ -225,8 +225,8 @@ export function HistoryPanel({
   return (
     <Panel>
       <PanelHead
-        title="History"
-        subtitle="What Tripwire believed at a chosen recorded moment"
+        title="Recorded beliefs"
+        subtitle="Choose a date to see what was known."
         actions={
           onResetToNow ? (
             <Button size="sm" onClick={onResetToNow}>
