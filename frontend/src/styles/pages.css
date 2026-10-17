@@ -1,0 +1,174 @@
+/**
+ * Page-body normalisation.
+ *
+ * Every route renders inside `.page`; this file gives all eight pages ONE
+ * rhythm — generous vertical spacing, breathing room inside panels — and owns
+ * the graph page's two-column composition:
+ *
+ *     canvas (full height)  |  sticky inspector
+ *                           |  reading note
+ *
+ * The inspector sits BESIDE the canvas and is sticky, so selecting a node never
+ * requires scrolling down to read it.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  min-width: 0;
+}
+
+/* No page root may set its own outer width or margins: the shell owns that. */
+.page > * {
+  max-width: none;
+  margin: 0;
+  min-width: 0;
+}
+
+/* Kill the outer padding the page roots used to add on top of the shell gutter. */
+.page > :is(.cc, .alerts-page, .experts-page, .history-page, .scenario-page, .graph-page),
+.page > .stack--loose {
+  padding: 0;
+}
+
+/* A loose stack is now the page body itself, so it inherits the body gap. */
+.page > .stack,
+.page > .stack--loose {
+  gap: var(--sp-6);
+}
+
+/* Panels get room to breathe: prose was jammed against the borders. */
+.page .panel__body {
+  padding: var(--sp-5);
+}
+
+.page .panel__body--tight {
+  padding: var(--sp-4);
+}
+
+.page .panel__head {
+  padding: var(--sp-4) var(--sp-5);
+}
+
+.page .panel__foot {
+  padding: var(--sp-3) var(--sp-5);
+}
+
+/* ------------------------------------------------------------------ graph */
+/*
+ * The graph page is a constellation instrument: the canvas takes the remaining
+ * width and height, and the inspector is a sticky column on the right edge.
+ */
+/* Knowledge Graph — canvas + sticky inspector */
+
+.page > .graph-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "canvas inspector"
+    "note   inspector";
+  align-items: start;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+.page > .graph-page > .graph-page__canvas {
+  grid-area: canvas;
+  min-width: 0;
+  width: 100%;
+  min-height: 560px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.page > .graph-page > .graph-page__inspector {
+  grid-area: inspector;
+  position: sticky;
+  top: 20px;
+  align-self: start;
+  min-width: 0;
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.page > .graph-page > .graph-page__note {
+  grid-area: note;
+  min-width: 0;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* Keep inspector content readable */
+.graph-page__inspector h1,
+.graph-page__inspector h2,
+.graph-page__inspector h3 {
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.graph-page__inspector p {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.graph-page__inspector img,
+.graph-page__inspector svg {
+  max-width: 100%;
+}
+
+/* Tablet: inspector moves below canvas */
+@media (max-width: 1100px) {
+  .page > .graph-page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "canvas"
+      "inspector"
+      "note";
+  }
+
+  .page > .graph-page > .graph-page__canvas {
+    min-height: 440px;
+  }
+
+  .page > .graph-page > .graph-page__inspector {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .page > .graph-page {
+    gap: 14px;
+  }
+
+  .page > .graph-page > .graph-page__canvas {
+    min-height: 340px;
+    border-radius: 14px;
+  }
+
+  .page > .graph-page > .graph-page__inspector {
+    border-radius: 14px;
+  }
+
+  .page > .graph-page > .graph-page__note {
+    padding: 12px 14px;
+  }
+}

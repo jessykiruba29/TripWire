@@ -121,8 +121,22 @@ class FalkorGraphStore(GraphStore):
                 socket_connect_timeout=socket_timeout,
             )
             self._graph = self._client.select_graph(graph)
-            # Fail fast with a clear message rather than at first write.
-            self._graph.ro_query("RETURN 1")
+            # Probe the *connection*, not the graph. A brand-new graph has no key
+            # yet, and any query against it raises "Invalid graph operation on empty
+            # key" - which made a fresh deployment impossible to bootstrap even
+            # though the server was perfectly healthy.
+            self._client.connection.ping()
+            # Materialise the graph key. select_graph() only returns a handle: the key
+            # does not exist until something is written, and until then *every* query
+            # - including `MATCH (n) RETURN count(n)` - fails with "Invalid graph
+            # operation on empty key". Creating then deleting one throwaway node
+            # bootstraps an empty graph safely.
+            try:
+                known = {str(name) for name in self._client.list_graphs()}
+            except Exception:  # noqa: BLE001 - older servers / empty keyspace
+                known = set()
+            if graph not in known:
+                self._graph.query("CREATE (n:__tripwire_init) DELETE n")
         except Exception as exc:  # noqa: BLE001 - surface as a typed error
             raise StoreUnavailableError(
                 f"cannot reach FalkorDB at {host}:{port} (graph {graph!r}): {exc}. "
@@ -131,7 +145,14 @@ class FalkorGraphStore(GraphStore):
                 details={"host": host, "port": int(port), "graph": graph},
             ) from exc
         if create_indices:
-            self.ensure_indices()
+            # Index creation needs an existing graph key, so on a first-run database
+            # this is deferred until the first write materialises the graph.
+            try:
+                existing = {str(name) for name in self._client.list_graphs()}
+            except Exception:  # noqa: BLE001 - older servers, empty keyspace
+                existing = set()
+            if graph in existing:
+                self.ensure_indices()
 
     # ----------------------------------------------------------------- helpers
     @staticmethod

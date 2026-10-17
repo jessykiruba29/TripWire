@@ -136,7 +136,7 @@ export function GraphPanel({
       <PanelHead
         icon={<IconNetwork size={17} />}
         title="Company knowledge graph"
-        subtitle="Facts, the assumptions they carry, the decisions that lean on them — and the people and sources behind each."
+        subtitle="Every entity, and the relationships that carry it."
         actions={
           <>
             {highlight && highlight.nodeIds.size > 0 ? (

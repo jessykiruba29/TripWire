@@ -1,0 +1,235 @@
+/**
+ * Per-page visual identities.
+ *
+ * Each of the eight routes gets its own accent, its own lead treatment and its own
+ * density, so the product reads as one system without eight identical dashboards.
+ * The rules below are additive and target each page's existing root class, so no
+ * page component or shared component had to be rewritten to gain the new look.
+ *
+ *   Command Center   .cc                  -> command deck: wide lead metric band
+ *   Knowledge Graph  .graph-page          -> instrument: full-bleed dark canvas
+ *   Decisions        .app__grid--explorer -> split reading pane
+ *   Alerts           .alerts-page         -> triage queue
+ *   Experts          .experts-page        -> leaderboard
+ *   History          .history-page        -> chronology
+ *   Evidence         .evidence-page       -> archive
+ *   Scenarios        .scenario-page       -> console
+ */
+
+/* ------------------------------------------------------------------ shared */
+.page {
+  --page-accent: var(--accent-violet);
+  --page-accent-2: var(--accent-cyan);
+  position: relative;
+}
+
+/* A single hairline aura at the top of each page, tinted per route. It costs one
+   gradient and gives every page a horizon line so the header never floats. */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 180px;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 100% at 50% 0%,
+    color-mix(in srgb, var(--page-accent) 14%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0.9;
+  z-index: -1;
+}
+
+.page :is(h2, .panel__title, .section-title) {
+  letter-spacing: -0.01em;
+}
+
+/* Panels: deeper glass, tighter header, brighter on hover. Applied only inside a
+   page so the shell is untouched. */
+.page .panel {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface) 92%, var(--page-accent) 8%) 0%,
+      color-mix(in srgb, var(--surface) 97%, transparent) 100%
+    );
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 0 color-mix(in srgb, white 6%, transparent) inset, var(--shadow-md, 0 10px 30px rgba(0, 0, 0, 0.25));
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.page .panel:hover {
+  border-color: color-mix(in srgb, var(--page-accent) 38%, var(--border));
+}
+
+.page .panel__head {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+/* Metrics read as instruments, not prose. */
+.page .stat__value,
+.page .stat dd {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------- command center (.cc) */
+.page > .cc {
+  --page-accent: var(--accent-indigo);
+  --page-accent-2: var(--accent-cyan);
+}
+
+/* The first block becomes a command deck: wide, tinted, with a lit top edge. */
+.page > .cc > :first-child {
+  position: relative;
+  padding: var(--sp-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--accent-indigo) 30%, var(--border));
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--accent-indigo) 16%, transparent), transparent 55%),
+    color-mix(in srgb, var(--surface) 88%, transparent);
+  overflow: hidden;
+}
+
+.page > .cc > :first-child::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-violet), transparent);
+  opacity: 0.7;
+}
+
+/* -------------------------------------------------------- knowledge graph */
+.page > .graph-page {
+  --page-accent: var(--accent-cyan);
+  --page-accent-2: var(--accent-violet);
+}
+
+/* The graph is an instrument: no panel chrome around the canvas, deep field
+   background, and a hard edge so the constellation reads as a viewport. */
+.page > .graph-page {
+  --graph-surface: #04060f;
+}
+
+.page > .graph-page .panel:first-of-type {
+  background: var(--graph-surface);
+  border-color: color-mix(in srgb, var(--accent-cyan) 22%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-cyan) 8%, transparent) inset,
+    0 24px 60px -20px rgba(0, 0, 0, 0.8);
+}
+
+.page > .graph-page .panel:first-of-type .panel__head {
+  border-bottom-color: color-mix(in srgb, var(--accent-cyan) 18%, var(--border));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent-cyan) 8%, transparent), transparent 70%);
+}
+
+/* ------------------------------------------------------------- decisions */
+.page > .app__grid--explorer {
+  --page-accent: var(--accent-violet);
+}
+
+/* Reading pane: the list on the left is denser, the detail pane gets a spine. */
+.page > .app__grid--explorer > :last-child {
+  border-left: 1px solid color-mix(in srgb, var(--accent-violet) 24%, var(--border));
+  padding-left: var(--sp-5);
+}
+
+/* ---------------------------------------------------------------- alerts */
+.page > .alerts-page {
+  --page-accent: var(--signal-critical, #ff7b6e);
+}
+
+/* Triage: alert rows get a status rail on the left edge. */
+.page > .alerts-page .alert-item,
+.page > .alerts-page [data-testid='alert-row'] {
+  border-left: 2px solid color-mix(in srgb, var(--page-accent) 45%, transparent);
+  padding-left: var(--sp-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.page > .alerts-page .alert-item:hover,
+.page > .alerts-page [data-testid='alert-row']:hover {
+  border-left-color: var(--page-accent);
+  background: color-mix(in srgb, var(--page-accent) 6%, transparent);
+}
+
+/* --------------------------------------------------------------- experts */
+.page > .experts-page {
+  --page-accent: var(--accent-emerald, #4fe3c1);
+}
+
+/* Leaderboard: the first expert is the headline, so give the list a scale step. */
+.page > .experts-page .expert-card:first-child,
+.page > .experts-page [data-testid='expert-row']:first-child {
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--page-accent) 12%, transparent),
+    transparent 60%
+  );
+  border-color: color-mix(in srgb, var(--page-accent) 34%, var(--border));
+}
+
+/* --------------------------------------------------------------- history */
+.page > .history-page {
+  --page-accent: var(--accent-amber, #f7b955);
+}
+
+/* Chronology: a vertical spine behind the timeline. */
+.page > .history-page .timeline,
+.page > .history-page [data-testid='timeline'] {
+  position: relative;
+  padding-left: var(--sp-5);
+}
+
+.page > .history-page .timeline::before,
+.page > .history-page [data-testid='timeline']::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 10px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--page-accent) 55%, transparent),
+    transparent
+  );
+}
+
+/* -------------------------------------------------------------- evidence */
+.page > .evidence-page,
+.page > .stack--loose:has(.source-card) {
+  --page-accent: var(--accent-blue, #7aa2ff);
+}
+
+/* Archive: source cards become file tabs. */
+.page .source-card {
+  border-left: 2px solid color-mix(in srgb, var(--page-accent) 40%, transparent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* -------------------------------------------------------------- scenarios */
+.page > .scenario-page {
+  --page-accent: var(--accent-magenta, #d478ff);
+}
+
+/* Console: the run panel gets a lit frame so the primary action is obvious. */
+.page > .scenario-page > :first-child {
+  border: 1px solid color-mix(in srgb, var(--page-accent) 34%, var(--border));
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  background:
+    linear-gradient(130deg, color-mix(in srgb, var(--page-accent) 12%, transparent), transparent 60%),
+    color-mix(in srgb, var(--surface) 90%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page .panel {
+    transition: none;
+  }
+}

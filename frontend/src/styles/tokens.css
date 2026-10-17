@@ -1,60 +1,80 @@
 /**
- * Tripwire design system.
+ * Tripwire design system — "deep field" edition.
  *
- * One source of truth for colour, type and spacing. Component styles live in
- * `global.css` (plain CSS, no preprocessor) and consume these custom properties.
+ * One source of truth for colour, type and spacing. Component styles consume
+ * these custom properties; the dark-galaxy identity lives here, not scattered
+ * through components.
  *
  * Colour is meaningful, not decorative:
  *   - each graph node type owns a hue (see `graphTheme.ts`, which mirrors it on canvas)
  *   - each review/validity state owns a signal colour
  * Never introduce a colour that carries no meaning.
+ *
+ * The palette is a night sky read through instrumentation: near-black indigo
+ * surfaces, fine structural lines, restrained violet/indigo brand light, icy
+ * cyan for information and warm amber reserved for "a human must look".
  */
 
 :root {
-  /* Surfaces */
-  --bg: #f5f7fa;
-  --surface: #ffffff;
-  --surface-2: #fbfcfe;
-  --surface-3: #eef2f7;
-  --graph-bg: #f8fafc;
+  /* Surfaces — deep space, layered by altitude */
+  --bg: #070a14;
+  --surface: #0e1324;
+  --surface-2: #131a30;
+  --surface-3: #1a2240;
+  --graph-bg: #0a0f1e;
 
-  /* Ink */
-  --ink: #0f1729;
-  --ink-2: #33415c;
-  --ink-muted: #5c6a82;
-  --ink-faint: #8794a8;
+  /* Atmospheric gradient used behind the shell and the graph */
+  --atmosphere:
+    radial-gradient(1200px 700px at 82% -10%, rgba(99, 102, 241, 0.14), transparent 60%),
+    radial-gradient(900px 600px at 8% 0%, rgba(124, 58, 237, 0.10), transparent 55%),
+    radial-gradient(1400px 900px at 50% 120%, rgba(34, 211, 238, 0.06), transparent 60%);
+  --star-color: rgba(226, 232, 255, 0.85);
 
-  /* Lines */
-  --border: #dfe5ee;
-  --border-strong: #c3cddc;
+  /* Ink — starlight text ladder */
+  --ink: #e8ecf8;
+  --ink-2: #b9c3dd;
+  --ink-muted: #8792b0;
+  --ink-faint: #5d6884;
 
-  /* Brand */
-  --brand: #1f4bd8;
-  --brand-ink: #14318f;
-  --brand-soft: #e8eefc;
+  /* Lines — hairline orbital structure */
+  --border: rgba(148, 163, 216, 0.16);
+  --border-strong: rgba(148, 163, 216, 0.30);
 
-  /* Signals */
-  --signal-critical: #c0392b;
-  --signal-critical-soft: #fdeceb;
-  --signal-warning: #b26a04;
-  --signal-warning-soft: #fdf3e3;
-  --signal-ok: #16714a;
-  --signal-ok-soft: #e6f4ee;
-  --signal-info: #0b6c95;
-  --signal-info-soft: #e6f2f8;
-  --signal-neutral-soft: #eef2f7;
+  /* Brand — restrained violet / electric indigo */
+  --brand: #8b93ff;
+  --brand-ink: #c3c8ff;
+  --brand-soft: rgba(124, 108, 255, 0.14);
 
-  /* Node type hues — mirrored in graphTheme.ts */
-  --nt-fact: #2563eb;
-  --nt-assumption: #7c3aed;
-  --nt-decision: #0f766e;
-  --nt-project: #b45309;
-  --nt-person: #be185d;
-  --nt-system: #475569;
-  --nt-message: #7c8899;
-  --nt-document: #0891b2;
-  --nt-event: #b91c1c;
-  --nt-team: #4d7c0f;
+  /* Signals — only these may encode meaning */
+  --signal-critical: #ff7b6e;
+  --signal-critical-soft: rgba(255, 105, 97, 0.13);
+  --signal-warning: #f6b95a;
+  --signal-warning-soft: rgba(246, 185, 90, 0.13);
+  --signal-ok: #55d6a8;
+  --signal-ok-soft: rgba(85, 214, 168, 0.13);
+  --signal-info: #6fd7f2;
+  --signal-info-soft: rgba(111, 215, 242, 0.13);
+  --signal-neutral-soft: rgba(148, 163, 216, 0.10);
+
+  /* Accents for glow and detail work (never body text) */
+  --accent-violet: #a78bfa;
+  --accent-indigo: #818cf8;
+  --accent-cyan: #67e8f9;
+  --accent-amber: #fbbf24;
+  --glow-brand: 0 0 22px rgba(139, 147, 255, 0.25);
+  --glow-cyan: 0 0 18px rgba(103, 232, 249, 0.22);
+
+  /* Node type hues — mirrored in graphTheme.ts (legible on the night graph) */
+  --nt-fact: #7aa2ff;
+  --nt-assumption: #b18cff;
+  --nt-decision: #4fe3c1;
+  --nt-project: #f7b955;
+  --nt-person: #ff8fc0;
+  --nt-system: #9aa8c7;
+  --nt-message: #8b97b4;
+  --nt-document: #5fd3ef;
+  --nt-event: #ff8577;
+  --nt-team: #a6dc6a;
 
   /* Type scale */
   --fs-2xs: 10px;
@@ -65,6 +85,9 @@
   --fs-lg: 16px;
   --fs-xl: 20px;
   --fs-2xl: 26px;
+
+  /* Display type for page titles and the wordmark */
+  --font-display: "Space Grotesk", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 
   /* Space */
   --sp-1: 4px;
@@ -78,9 +101,10 @@
   --radius: 7px;
   --radius-lg: 11px;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 41, 0.06);
-  --shadow: 0 2px 8px rgba(15, 23, 41, 0.08);
-  --shadow-lg: 0 12px 32px rgba(15, 23, 41, 0.18);
+  /* Elevation — dark UIs need depth without brightness */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow: 0 4px 18px rgba(2, 4, 12, 0.45);
+  --shadow-lg: 0 18px 48px rgba(2, 4, 12, 0.6);
 
   --font: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Cascadia Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
@@ -100,12 +124,51 @@ body,
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--atmosphere);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font);
   font-size: var(--fs-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Star field: two fixed layers of fine points, pure decoration, GPU-cheap. */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-repeat: repeat;
+}
+
+body::before {
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, var(--star-color) 50%, transparent 51%),
+    radial-gradient(1px 1px at 64% 8%, rgba(226, 232, 255, 0.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 38% 64%, rgba(226, 232, 255, 0.4) 50%, transparent 51%),
+    radial-gradient(1px 1px at 84% 46%, rgba(226, 232, 255, 0.55) 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 86%, rgba(226, 232, 255, 0.35) 50%, transparent 51%);
+  background-size: 360px 360px, 280px 280px, 420px 420px, 320px 320px, 500px 500px;
+  opacity: 0.5;
+}
+
+body::after {
+  background-image:
+    radial-gradient(1.5px 1.5px at 50% 30%, rgba(167, 139, 250, 0.5) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 18% 70%, rgba(103, 232, 249, 0.4) 50%, transparent 51%);
+  background-size: 540px 540px, 640px 640px;
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    display: none;
+  }
 }
 
 h1,
@@ -117,24 +180,25 @@ p {
 }
 
 h1 {
+  font-family: var(--font-display);
   font-size: var(--fs-xl);
-  font-weight: 650;
+  font-weight: 620;
   letter-spacing: -0.015em;
 }
 h2 {
   font-size: var(--fs-lg);
-  font-weight: 640;
+  font-weight: 620;
   letter-spacing: -0.01em;
 }
 h3 {
   font-size: var(--fs-md);
-  font-weight: 620;
+  font-weight: 600;
 }
 h4 {
   font-size: var(--fs-sm);
-  font-weight: 640;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--ink-muted);
 }
 
@@ -144,13 +208,17 @@ button {
 }
 
 a {
-  color: var(--brand);
+  color: var(--brand-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid var(--accent-cyan);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: rgba(139, 147, 255, 0.35);
 }
 
 ::-webkit-scrollbar {
@@ -161,13 +229,13 @@ a {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c9d2e0;
+  background: rgba(148, 163, 216, 0.22);
   border: 3px solid transparent;
   border-radius: 8px;
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #aab7ca;
+  background: rgba(148, 163, 216, 0.38);
   background-clip: content-box;
 }
 

@@ -158,6 +158,22 @@ export function GraphCanvas({
   const linkDashFn = useCallback((link: object) => linkLineDash(link as GraphEdge, drawState), [drawState]);
   const linkCurvatureFn = useCallback((link: object) => linkCurvature(link as GraphEdge), []);
 
+  /* ------------------------------------------------------- simulation */
+
+  /*
+   * Open the layout up. The force defaults pack ~110 nodes into a dense ball, which
+   * is what made the graph read as "congested": nodes overlapped, labels collided
+   * and every link looked equally important. More charge and a longer link distance
+   * buy the whitespace that makes clusters legible.
+   */
+  useEffect(() => {
+    const charge = fgRef.current?.d3Force('charge') as { strength?: (value: number) => void } | undefined;
+    charge?.strength?.(-340);
+    const link = fgRef.current?.d3Force('link') as { distance?: (value: number) => void } | undefined;
+    link?.distance?.(120);
+    fgRef.current?.d3ReheatSimulation?.();
+  }, []);
+
   /* ------------------------------------------------------- interactions */
 
   const handleFit = useCallback(() => {
@@ -177,7 +193,15 @@ export function GraphCanvas({
   const handleEngineStop = useCallback(() => {
     if (hasSettled) return;
     setHasSettled(true);
-    fgRef.current?.zoomToFit(600, 48);
+    /*
+     * Deliberately NOT zoomToFit. Fitting every node is exactly why the graph
+     * "kept zooming out": the first layout settle snapped the camera to the whole
+     * graph (~115 nodes => tiny dots), and every remount of the page repeated it, so
+     * any interaction appeared to be undone. Park the camera at a readable scale and
+     * centre it; zoom from here on is only ever the user's explicit choice.
+     */
+    fgRef.current?.centerAt(0, 0, 500);
+    fgRef.current?.zoom(1.05, 500);
   }, [hasSettled]);
 
   /*
@@ -206,9 +230,17 @@ export function GraphCanvas({
         graphData={graphData}
         width={size.width}
         height={size.height}
-        backgroundColor="#f8fafc"
+        backgroundColor="#0a0f1e"
         nodeId="id"
         nodeCanvasObject={nodeCanvasObject}
+        /*
+         * Without an explicit nodeLabel, react-force-graph stringifies the whole
+         * node object - that is where the "[object Object]" tooltip came from.
+         */
+        nodeLabel={(node: NodeObject<FGNode>) => {
+          const typed = node as FGNode;
+          return `${nodeTypeLabel(typed.type)} · ${typed.label}`;
+        }}
         nodePointerAreaPaint={nodePointerAreaPaint}
         linkColor={linkColorFn}
         linkWidth={linkWidthFn}
@@ -221,7 +253,18 @@ export function GraphCanvas({
           const edge = link as GraphEdge;
           return `${edge.source as unknown as string} —${edgeLabel(edge.type)}→ ${edge.target as unknown as string}`;
         }}
-        onNodeClick={(node: NodeObject<FGNode>) => onSelect(String((node as FGNode).id))}
+        /*
+         * Click-to-focus: select the node AND fly the camera to it. The graph is a
+         * map you navigate, not a picture you look at; Fit returns to the overview.
+         */
+        onNodeClick={(node: NodeObject<FGNode>) => {
+          const target = node as unknown as FGNode & { x?: number; y?: number };
+          onSelect(String(target.id));
+          if (typeof target.x === 'number' && typeof target.y === 'number') {
+            fgRef.current?.centerAt(target.x, target.y, 600);
+            fgRef.current?.zoom(2.1, 600);
+          }
+        }}
         onNodeHover={(node: NodeObject<FGNode> | null) => setHovered(node ? (node as FGNode) : null)}
         onBackgroundClick={() => onSelect(null)}
         onEngineStop={handleEngineStop}
@@ -230,6 +273,13 @@ export function GraphCanvas({
         d3AlphaDecay={0.028}
         d3VelocityDecay={0.32}
         enableNodeDrag
+        /*
+         * Zoom is enabled. It was previously disabled to stop the view collapsing on
+         * page scroll, but the real cause of that was the auto `zoomToFit` on engine
+         * stop, which is now gone - so wheel/pinch zoom is safe and expected.
+         */
+        enableZoomInteraction
+        enablePanInteraction
         aria-label={`Company knowledge graph with ${nodes.length} entities and ${edges.length} relationships. Use the text view for a full keyboard-readable list.`}
       />
 

@@ -14,11 +14,11 @@ export interface GraphLegendProps {
 }
 
 const ATTENTION_STATES: Array<{ state: keyof typeof NODE_STATE_META; ring: string; dashed?: boolean }> = [
-  { state: 'contradicted', ring: '#c0392b', dashed: true },
-  { state: 'new_fact', ring: '#0b6c95' },
-  { state: 'needs_review', ring: '#b26a04' },
-  { state: 'confirmed_stale', ring: '#c0392b' },
-  { state: 'potentially_affected', ring: '#b26a04', dashed: true },
+  { state: 'contradicted', ring: '#ff6b5e', dashed: true },
+  { state: 'new_fact', ring: '#6fd7f2' },
+  { state: 'needs_review', ring: '#f6b95a' },
+  { state: 'confirmed_stale', ring: '#ff6b5e' },
+  { state: 'potentially_affected', ring: '#f6b95a', dashed: true },
 ];
 
 const RELATION_SAMPLES: Array<{ key: keyof typeof PRIMARY_EDGE_COLOR; label: string; dashed?: boolean }> = [

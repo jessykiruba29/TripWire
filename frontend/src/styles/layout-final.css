@@ -1,0 +1,121 @@
+/**
+ * Final shell layout corrections.
+ *
+ * 1. The left sidebar is gone. Navigation is a horizontal rail directly under the
+ *    header, so the reading area gets the full width of the page - the vertical
+ *    rail was stealing 240px from every screen and squeezing the graph.
+ * 2. The graph inspector moves from below the canvas into a sticky column beside
+ *    it, so selecting a node never requires scrolling to read it.
+ *
+ * Markup is untouched: the nav keeps `aria-label="Primary"` and every link keeps
+ * its name, and the inspector keeps `.graph-page__inspector`.
+ */
+
+/* ------------------------------------------------------- horizontal nav rail */
+.app__body {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.sidenav {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-4);
+  border-right: none;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(10px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.sidenav::-webkit-scrollbar {
+  display: none;
+}
+
+.sidenav__section {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.sidenav__section + .sidenav__section {
+  margin-top: 0;
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--border);
+}
+
+/* The group captions are vertical-rail affordances; in a single rail they read as
+   noise between items. */
+.sidenav__section-label {
+  display: none;
+}
+
+.sidenav__list {
+  flex-direction: row;
+  gap: var(--sp-1);
+}
+
+.sidenav__item {
+  white-space: nowrap;
+  padding: 6px 12px;
+}
+
+.sidenav__foot {
+  margin-left: auto;
+  padding-top: 0;
+  border-top: none;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------- graph + inspector columns */
+.page > .graph-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: var(--sp-5);
+  align-items: start;
+}
+
+/* Page title row spans both columns. */
+.page > .graph-page > :first-child {
+  grid-column: 1 / -1;
+}
+
+.page > .graph-page > .graph-page__inspector {
+  position: sticky;
+  top: var(--sp-4);
+  max-height: 290px;
+  overflow-y: auto;
+}
+
+/* Below this width the inspector stacks under the canvas again. */
+@media (max-width: 1180px) {
+  .page > .graph-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page > .graph-page > .graph-page__inspector {
+    position: static;
+    max-height: none;
+  }
+}
+
+/* Mobile: the rail wraps rather than scrolling sideways off-screen. */
+@media (max-width: 760px) {
+  .sidenav {
+    flex-wrap: wrap;
+    gap: var(--sp-1);
+  }
+
+  .sidenav__section + .sidenav__section {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .sidenav__foot {
+    margin-left: 0;
+  }
+}

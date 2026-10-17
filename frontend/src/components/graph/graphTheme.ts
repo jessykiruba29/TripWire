@@ -15,22 +15,22 @@ import { NODE_TYPE_META } from '../../lib/vocabulary';
 import type { PathHighlight } from '../../lib/graph';
 
 export const GRAPH_INK = {
-  label: '#1c2536',
-  labelHalo: 'rgba(255,255,255,0.92)',
-  structuralLink: '#c3ccd9',
+  label: '#dfe6ff',
+  labelHalo: 'rgba(6,9,18,0.85)',
+  structuralLink: 'rgba(148,163,216,0.32)',
   dim: 0.1,
 };
 
 export const PRIMARY_EDGE_COLOR: Partial<Record<GraphEdge['type'], string>> = {
-  contradicts: '#c0392b',
-  supersedes: '#c0392b',
-  supports: '#2563eb',
-  depends_on: '#7c3aed',
-  assumes: '#7c3aed',
-  affects: '#0f766e',
-  raised_for: '#b91c1c',
-  observed_by: '#b91c1c',
-  escalates: '#b26a04',
+  contradicts: '#ff6b5e',
+  supersedes: '#ff6b5e',
+  supports: '#7aa2ff',
+  depends_on: '#b18cff',
+  assumes: '#b18cff',
+  affects: '#4fe3c1',
+  raised_for: '#ff8577',
+  observed_by: '#ff8577',
+  escalates: '#f6b95a',
 };
 
 export interface DrawState {
@@ -67,20 +67,20 @@ export function nodeRadius(node: GraphNode): number {
 export function stateRing(node: GraphNode): { color: string; dashed: boolean; width: number } | null {
   switch (node.state) {
     case 'contradicted':
-      return { color: '#c0392b', dashed: true, width: 2 };
+      return { color: '#ff6b5e', dashed: true, width: 2 };
     case 'new_fact':
     case 'contradicted_replacement':
-      return { color: '#0b6c95', dashed: false, width: 2 };
+      return { color: '#6fd7f2', dashed: false, width: 2 };
     case 'needs_review':
-      return { color: '#b26a04', dashed: false, width: 2 };
+      return { color: '#f6b95a', dashed: false, width: 2 };
     case 'confirmed_stale':
-      return { color: '#c0392b', dashed: false, width: 2.5 };
+      return { color: '#ff6b5e', dashed: false, width: 2.5 };
     case 'potentially_affected':
-      return { color: '#b26a04', dashed: true, width: 1.6 };
+      return { color: '#f6b95a', dashed: true, width: 1.6 };
     case 'dismissed':
-      return { color: '#8794a8', dashed: true, width: 1.2 };
+      return { color: '#8792b0', dashed: true, width: 1.2 };
     case 'resolved':
-      return { color: '#16714a', dashed: false, width: 1.6 };
+      return { color: '#55d6a8', dashed: false, width: 1.6 };
     default:
       return null;
   }
@@ -169,14 +169,14 @@ export function drawNode(ctx: CanvasRenderingContext2D, node: FGNode, globalScal
   if (isSelected || onPath) {
     ctx.beginPath();
     ctx.arc(x, y, r + (isSelected ? 7 : 4.5), 0, Math.PI * 2);
-    ctx.fillStyle = isSelected ? 'rgba(31,75,216,0.22)' : 'rgba(31,75,216,0.13)';
+    ctx.fillStyle = isSelected ? 'rgba(139,147,255,0.30)' : 'rgba(139,147,255,0.16)';
     ctx.fill();
   }
 
   if (isHovered) {
     ctx.beginPath();
     ctx.arc(x, y, r + 5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(15,23,41,0.10)';
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
     ctx.fill();
   }
 
@@ -185,7 +185,7 @@ export function drawNode(ctx: CanvasRenderingContext2D, node: FGNode, globalScal
   ctx.fill();
 
   // A white inner edge keeps overlapping nodes readable on the light canvas.
-  ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+  ctx.strokeStyle = 'rgba(6,9,18,0.7)';
   ctx.lineWidth = 1;
   ctx.stroke();
 
@@ -203,7 +203,7 @@ export function drawNode(ctx: CanvasRenderingContext2D, node: FGNode, globalScal
 
   if (isSelected) {
     traceShape(ctx, node.type, x, y, r + (ring ? 5.5 : 3.5));
-    ctx.strokeStyle = '#1f4bd8';
+    ctx.strokeStyle = '#8b93ff';
     ctx.lineWidth = 2;
     ctx.setLineDash([]);
     ctx.stroke();
@@ -211,10 +211,17 @@ export function drawNode(ctx: CanvasRenderingContext2D, node: FGNode, globalScal
 
   ctx.restore();
 
-  // Labels: constant screen size regardless of zoom, and only when they help.
+  /*
+   * Labels: constant screen size regardless of zoom, and only where they earn their
+   * ink. The threshold used to be 0.85, i.e. almost always true at rest, so every
+   * node carried a label and the canvas read as a wall of text. Now the resting
+   * graph is dots; names appear for what the eye should land on - the selection,
+   * its hover target, the highlighted chain, anything in a non-normal state, and
+   * decisions (the semantic anchors). Projects only get a label once you zoom in.
+   */
   const labelWorthIt =
     state.showLabels &&
-    (globalScale > 0.85 ||
+    (globalScale > 1.5 ||
       isSelected ||
       isHovered ||
       onPath ||
@@ -222,8 +229,7 @@ export function drawNode(ctx: CanvasRenderingContext2D, node: FGNode, globalScal
       node.state === 'contradicted' ||
       node.state === 'needs_review' ||
       node.state === 'confirmed_stale' ||
-      node.type === 'decision' ||
-      node.type === 'project');
+      node.type === 'decision');
 
   if (!labelWorthIt) return;
 
@@ -255,7 +261,7 @@ export function linkAlpha(edge: GraphEdge, state: DrawState): number {
 }
 
 export function linkColor(edge: GraphEdge, state: DrawState): string {
-  if (state.highlight?.edgeIds.has(edge.id)) return '#1f4bd8';
+  if (state.highlight?.edgeIds.has(edge.id)) return '#8b93ff';
   const primary = PRIMARY_EDGE_COLOR[edge.type];
   if (primary) return primary;
   return GRAPH_INK.structuralLink;

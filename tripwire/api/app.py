@@ -29,6 +29,7 @@ from .routers import (
     dataset,
     decisions,
     demo,
+    entities,
     experts,
     facts,
     graph,
@@ -69,6 +70,7 @@ OPENAPI_TAGS = [
     {"name": "search", "description": "Substring search across the graph."},
     {"name": "sources", "description": "Source artifacts and the facts they state."},
     {"name": "ingest", "description": "Optional ingestion adapters and record ingestion."},
+    {"name": "entities", "description": "Dedicated listings per entity kind (decisions, people, ...)."},
 ]
 
 _ROUTERS = (
@@ -86,6 +88,9 @@ _ROUTERS = (
     search,
     sources,
     ingest,
+    # Entity listings are deliberately last: Starlette matches in registration
+    # order and these paths are the most generic of the API.
+    entities,
 )
 
 

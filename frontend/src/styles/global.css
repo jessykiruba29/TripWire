@@ -14,55 +14,31 @@
 .app {
   display: grid;
   grid-template-rows: auto 1fr;
+  /* The nav rail is a horizontal scroll container: without an explicit
+     minmax(0, 1fr) column its max-content width would widen the whole page. */
+  grid-template-columns: minmax(0, 1fr);
   min-height: 100%;
   height: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .app__header {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: var(--surface);
+  background: rgba(14, 19, 36, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
 
 .app__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 30%);
+  grid-template-columns: minmax(0, 1fr);
   min-height: 0;
   height: 100%;
-}
-
-.app__main {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  padding: var(--sp-4);
-  gap: var(--sp-4);
-  overflow: auto;
-}
-
-.app__rail {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  border-left: 1px solid var(--border);
-  background: var(--surface-2);
-  overflow: hidden;
-}
-
-@media (max-width: 1180px) {
-  .app__body {
-    grid-template-columns: minmax(0, 1fr);
-    height: auto;
-  }
-  .app__rail {
-    border-left: none;
-    border-top: 1px solid var(--border);
-    max-height: none;
-  }
 }
 
 /* --------------------------------------------------------------------- header */
@@ -137,7 +113,7 @@
   font-size: var(--fs-sm);
   border-bottom: 1px solid var(--border);
   background: var(--signal-warning-soft);
-  color: #6b3f00;
+  color: var(--signal-warning);
 }
 
 .banner--info {
@@ -295,7 +271,8 @@
 .btn--primary {
   background: var(--brand);
   border-color: var(--brand);
-  color: #fff;
+  color: #0a0e1d;
+  box-shadow: var(--glow-brand);
 }
 .btn--primary:hover:not(:disabled) {
   background: var(--brand-ink);
@@ -305,11 +282,10 @@
 .btn--danger {
   background: var(--signal-critical);
   border-color: var(--signal-critical);
-  color: #fff;
+  color: #180806;
 }
 .btn--danger:hover:not(:disabled) {
-  background: #9c2d21;
-  border-color: #9c2d21;
+  filter: brightness(1.08);
 }
 
 .btn--ghost {
@@ -368,27 +344,27 @@
 .badge--info {
   background: var(--signal-info-soft);
   color: var(--signal-info);
-  border-color: #bcdff0;
+  border-color: rgba(111, 215, 242, 0.35);
 }
 .badge--ok {
   background: var(--signal-ok-soft);
   color: var(--signal-ok);
-  border-color: #b9e0cd;
+  border-color: rgba(85, 214, 168, 0.35);
 }
 .badge--warning {
   background: var(--signal-warning-soft);
   color: var(--signal-warning);
-  border-color: #f0d8a8;
+  border-color: rgba(246, 185, 90, 0.35);
 }
 .badge--critical {
   background: var(--signal-critical-soft);
   color: var(--signal-critical);
-  border-color: #f3c3bd;
+  border-color: rgba(255, 123, 110, 0.4);
 }
 .badge--brand {
   background: var(--brand-soft);
   color: var(--brand-ink);
-  border-color: #c6d5f7;
+  border-color: rgba(139, 147, 255, 0.45);
 }
 
 .badge--outline {
@@ -515,10 +491,10 @@
 }
 
 .state--error {
-  border: 1px dashed #e3b4ae;
+  border: 1px dashed rgba(255, 123, 110, 0.45);
   border-radius: var(--radius-lg);
   background: var(--signal-critical-soft);
-  color: #7d2a1f;
+  color: var(--signal-critical);
 }
 
 .state__icon {
@@ -534,7 +510,7 @@
 }
 
 .state--error .state__title {
-  color: #7d2a1f;
+  color: var(--signal-critical);
 }
 
 .state__text {
@@ -545,8 +521,8 @@
 .state__detail {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: var(--sp-2) var(--sp-3);
   max-width: 100%;
@@ -566,7 +542,7 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #eef2f7 25%, #e4e9f1 37%, #eef2f7 63%);
+  background: linear-gradient(90deg, #141b33 25%, #1e2749 37%, #141b33 63%);
   background-size: 400% 100%;
   animation: tw-shimmer 1.4s ease infinite;
   border-radius: var(--radius-sm);
@@ -716,23 +692,23 @@
 
 .callout--info {
   background: var(--signal-info-soft);
-  border-color: #bcdff0;
-  color: #0a5273;
+  border-color: rgba(111, 215, 242, 0.35);
+  color: var(--signal-info);
 }
 .callout--warning {
   background: var(--signal-warning-soft);
-  border-color: #f0d8a8;
-  color: #6b3f00;
+  border-color: rgba(246, 185, 90, 0.35);
+  color: var(--signal-warning);
 }
 .callout--critical {
   background: var(--signal-critical-soft);
-  border-color: #f3c3bd;
-  color: #7d2a1f;
+  border-color: rgba(255, 123, 110, 0.4);
+  color: var(--signal-critical);
 }
 .callout--ok {
   background: var(--signal-ok-soft);
-  border-color: #b9e0cd;
-  color: #0f5637;
+  border-color: rgba(85, 214, 168, 0.35);
+  color: var(--signal-ok);
 }
 
 .callout__icon {
@@ -864,7 +840,7 @@
   top: -60px;
   z-index: 100;
   background: var(--brand);
-  color: #fff;
+  color: #0a0e1d;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius);
   transition: top 120ms ease;

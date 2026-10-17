@@ -8,12 +8,15 @@
 
 .graph-canvas-wrap {
   position: relative;
-  min-height: 420px;
-  height: clamp(420px, 58vh, 720px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  min-height: 480px;
+  height: clamp(520px, calc(100vh - 300px), 940px);
+  border: 1px solid color-mix(in srgb, var(--accent-cyan) 22%, var(--border));
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--graph-bg);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-cyan) 7%, transparent) inset,
+    0 30px 70px -30px rgba(0, 0, 0, 0.85);
 }
 
 .graph {
@@ -65,7 +68,7 @@
 .graph__controls {
   display: flex;
   gap: 4px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(14, 19, 36, 0.92);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 3px;
@@ -100,7 +103,7 @@
 }
 
 .graph__hint {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(10, 15, 30, 0.85);
   border-radius: var(--radius-sm);
   padding: 3px 8px;
   pointer-events: none;
@@ -160,8 +163,8 @@
   width: 11px;
   height: 11px;
   flex: none;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 1px rgba(15, 23, 41, 0.14);
+  border: 1px solid rgba(6, 9, 18, 0.6);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .legend__swatch--circle {
@@ -311,4 +314,362 @@
   font-size: var(--fs-sm);
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* =========================================================
+   KNOWLEDGE GRAPH — PREMIUM CANVAS
+========================================================= */
+
+.graph-panel {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+}
+
+/* Header */
+.graph-panel > .panel__head {
+  padding: 22px 24px;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.graph-panel > .panel__head h2,
+.graph-panel > .panel__head h3 {
+  letter-spacing: -0.035em;
+}
+
+/* Main body */
+.graph-panel > .panel__body {
+  padding: 20px 24px;
+}
+
+.graph-panel > .panel__body > .stack {
+  gap: 20px;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.graph-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--surface) 88%, #64748b 12%);
+}
+
+.graph-toolbar__search {
+  display: flex;
+  align-items: center;
+  flex: 1 1 220px;
+  min-width: 180px;
+  gap: 10px;
+  padding: 0 14px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.graph-toolbar__search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.graph-toolbar__search input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.graph-toolbar__search input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.graph-toolbar .toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 550;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease,
+    color 160ms ease;
+}
+
+.graph-toolbar .toggle:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.graph-toolbar .toggle--active {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--text);
+}
+
+.graph-toolbar .toggle input {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.graph-toolbar .toggle input:disabled {
+  cursor: not-allowed;
+}
+
+.graph-toolbar button {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   GRAPH CANVAS
+========================================================= */
+
+.graph-canvas-wrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 540px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      ellipse at 50% 45%,
+      color-mix(in srgb, var(--accent) 7%, transparent),
+      transparent 65%
+    ),
+    var(--surface);
+}
+
+.graph-canvas-wrap > * {
+  min-width: 0;
+}
+
+.graph-canvas-wrap canvas,
+.graph-canvas-wrap svg {
+  max-width: 100%;
+}
+
+.graph-canvas-wrap canvas {
+  display: block;
+}
+
+.graph-canvas-wrap:has(.state),
+.graph-canvas-wrap:has(.loading-row) {
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   EMPTY, ERROR AND LOADING STATES
+========================================================= */
+
+.graph-panel .state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 440px;
+  margin: auto;
+  padding: 48px 20px;
+  text-align: center;
+}
+
+.graph-panel .state__icon {
+  margin-bottom: 18px;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.graph-panel .state__title {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.graph-panel .state__text {
+  max-width: 360px;
+  margin: 0 0 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.graph-panel .loading-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* =========================================================
+   TEXT VIEW
+========================================================= */
+
+.graph-panel .graph-text-view {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.graph-panel .graph-text-view button {
+  width: 100%;
+  text-align: left;
+}
+
+/* =========================================================
+   LEGEND
+========================================================= */
+
+.graph-panel > .panel__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.graph-panel > .panel__foot .legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.graph-panel .legend__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+/* Counts footer */
+.graph-panel > .panel__foot:last-child {
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.graph-panel .mono {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (min-width: 1500px) {
+  .graph-panel > .panel__body {
+    padding: 24px 28px;
+  }
+
+  .graph-canvas-wrap {
+    min-height: 640px;
+  }
+}
+
+@media (max-width: 900px) {
+  .graph-panel {
+    border-radius: 16px;
+  }
+
+  .graph-panel > .panel__head {
+    padding: 18px;
+  }
+
+  .graph-panel > .panel__body {
+    padding: 14px;
+  }
+
+  .graph-toolbar {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .graph-toolbar__search {
+    flex-basis: 100%;
+  }
+
+  .graph-canvas-wrap {
+    min-height: 440px;
+    border-radius: 12px;
+  }
+
+  .graph-panel > .panel__foot {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 560px) {
+  .graph-panel > .panel__head {
+    padding: 16px;
+  }
+
+  .graph-panel > .panel__body {
+    padding: 10px;
+  }
+
+  .graph-toolbar .toggle {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .graph-toolbar button {
+    flex: 1 1 auto;
+  }
+
+  .graph-canvas-wrap {
+    min-height: 350px;
+  }
+
+  .graph-panel > .panel__foot {
+    padding: 12px;
+    gap: 10px;
+  }
 }

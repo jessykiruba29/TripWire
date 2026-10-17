@@ -17,14 +17,23 @@ HTTP API uses.  There is exactly one implementation of every reasoning operation
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
-
-from mcp.server.mcpserver import MCPServer
+from typing import TYPE_CHECKING, Any, Optional
 
 from ..core.engine import GraphEngine
 from .tools import CORE_TOOLS, TOOL_DESCRIPTIONS, TOOL_NAMES, TripwireTools
 
-__all__ = ["SERVER_NAME", "INSTRUCTIONS", "build_server", "run", "streamable_http_app"]
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from mcp.server.mcpserver import MCPServer
+
+__all__ = [
+    "SERVER_NAME",
+    "INSTRUCTIONS",
+    "build_server",
+    "run",
+    "streamable_http_app",
+    "mcp_available",
+    "MCPServerUnavailable",
+]
 
 SERVER_NAME = "tripwire"
 DEFAULT_HTTP_HOST = "127.0.0.1"
@@ -67,7 +76,42 @@ def _version() -> str:
         return "0.0.0"
 
 
-def build_server(engine: Optional[GraphEngine] = None) -> MCPServer:
+class MCPServerUnavailable(RuntimeError):
+    """Raised when the optional ``mcp`` SDK is not installed.
+
+    The MCP transport is an *optional* dependency of this project: the HTTP API,
+    the engine and the tool callables in :mod:`tripwire.mcp_server.tools` are all
+    pure Python and must import and run without it.  Only building a transport
+    server needs the SDK, so only that call raises.
+    """
+
+
+_MCP_INSTALL_HINT = (
+    "The MCP SDK is not installed, so no MCP transport can be built. "
+    "Install it with `pip install -r requirements.txt`, or use the Tripwire HTTP "
+    "API / the tool callables in tripwire.mcp_server.tools, which need no SDK."
+)
+
+
+def mcp_available() -> bool:
+    """True when the optional MCP SDK can be imported."""
+    try:
+        import mcp.server.mcpserver  # noqa: F401
+    except Exception:  # noqa: BLE001 - any import failure means "not available"
+        return False
+    return True
+
+
+def _load_mcp_server_class() -> Any:
+    """Import ``MCPServer`` lazily, with an actionable error when it is missing."""
+    try:
+        from mcp.server.mcpserver import MCPServer  # noqa: PLC0415 - lazy on purpose
+    except ImportError as error:  # pragma: no cover - exercised by the no-SDK test
+        raise MCPServerUnavailable(_MCP_INSTALL_HINT) from error
+    return MCPServer
+
+
+def build_server(engine: Optional[GraphEngine] = None) -> "MCPServer":
     """Build an MCP server exposing the Tripwire tools.
 
     Parameters
@@ -79,7 +123,8 @@ def build_server(engine: Optional[GraphEngine] = None) -> MCPServer:
         is used - never a second store.
     """
     resolved = engine if engine is not None else GraphEngine.from_settings()
-    server: MCPServer = MCPServer(
+    server_class = _load_mcp_server_class()
+    server: "MCPServer" = server_class(
         name=SERVER_NAME,
         version=_version(),
         instructions=INSTRUCTIONS,

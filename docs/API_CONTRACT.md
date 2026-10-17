@@ -753,6 +753,92 @@ unchanged and returns the engine's result (HTTP 200).
 
 ---
 
+### `GET /api/entities`
+
+Entity-kind index with snapshot-wide counts.  No parameters.
+
+```json
+# GET /api/entities
+{"total": 42,
+ "counts": {"decisions": 7, "people": 12, "projects": 6, "systems": 8,
+            "teams": 4, "assumptions": 4, "events": 1},
+ "kinds": [{"kind": "decisions", "labels": ["Decision"], "label": "Decision",
+            "summary": "Decisions the company has made, with their recorded status.",
+            "count": 7, "path": "/api/decisions"}, ...]}
+```
+
+### `GET /api/{kind}` - dedicated entity lists
+
+One route per entity kind: **`/api/decisions`, `/api/people`, `/api/projects`,
+`/api/systems`, `/api/teams`, `/api/assumptions`, `/api/events`** (`events`
+covers both `Event` and `Alert` nodes, because an alert *is* a recorded event
+about a change - clients that need alerts specifically still use
+`/api/alerts`).
+
+| param | type | default | notes |
+|---|---|---|---|
+| `status` | string | – | exact, case-insensitive match on the node's recorded `status` (e.g. `ACTIVE`, `POTENTIALLY_STALE`).  No match is an empty list, not an error. |
+| `q` | string | – | case-insensitive substring over `name`, `id` and the text-bearing properties (`statement`, `summary`, `blurb`, `role`, `text`, `focus`). |
+| `limit` | int | 50 | 1–500.  `0`, negatives and values > 500 are 422. |
+| `offset` | int | 0 | ≥ 0; windows into the sorted match set. |
+| *others* | string | – | kind-specific equality filters.  Documented keys: `status`, `review_status`, `criticality`, `role`, `doc_type`, `event_type` (events only), `owner_id`, `team_id`.  **An undocumented filter name is 422**, never a silently ignored filter. |
+
+Ordering is deterministic: most-connected first (`events` are newest first),
+then `label`, then `id`.  The response echoes the applied filters and reports
+`counts` for **every** kind over the whole snapshot (never over the page), so
+`"showing N of M"` needs no second call.
+
+```json
+# GET /api/decisions?status=ACTIVE&limit=2
+{"kind": "decisions", "label": "Decision", "labels": ["Decision"],
+ "total": 7, "count": 2, "limit": 2, "offset": 0,
+ "filters": {"status": "ACTIVE", "q": null},
+ "counts": {"decisions": 7, "people": 12, "projects": 6, "systems": 8,
+            "teams": 4, "assumptions": 4, "events": 1},
+ "items": [{"id": "decision:eu-launch", "label": "Decision", "type": "Decision",
+            "name": "Launch Northwind in the EU on the Frankfurt hosting partner",
+            "kind": "decisions", "summary": "...", "state": "active",
+            "statement": "...", "status": "ACTIVE",
+            "relations": {"assumes": {"meaning": "assumptions this decision rests on",
+                                       "direction": "out", "relationships": ["ASSUMES"],
+                                       "ids": ["assumption:data-residency-eu"],
+                                       "labels": ["Assumption"], "names": ["..."],
+                                       "count": 1,
+                                       "edges": [{"source": "decision:eu-launch",
+                                                  "target": "assumption:data-residency-eu",
+                                                  "rel": "ASSUMES", ...}]}, ...},
+            "related_ids": ["assumption:data-residency-eu", "project:eu-launch", ...]}, ...]}
+```
+
+Each item is a flattened `Node.to_view()` plus derived navigation fields:
+`kind`, `summary` (headline text), `state` (the node's recorded status
+lowercased, `recorded` for events, `unknown` when none), `relations` (the
+recorded relationships of that kind, each with `direction` `out`/`in` - `out`
+when the entity is the edge source, `in` when it is the target - plus real
+edge views) and `related_ids`.  A relation the graph does not record is
+**absent** from `relations`; an empty list never has to be guessed at.
+
+### `GET /api/{kind}/{entity_id}`
+
+One entity of that kind, using the *same view* as the list, wrapped in
+`{found, kind, entity_id, entity}`.  An unknown id - or an id that exists under
+a different label - is **404** with the standard envelope:
+
+```json
+# GET /api/decisions/decision:nope  -> 404
+{"error": "not_found",
+ "message": "'decision:nope' is not present in the graph as Decision.",
+ "details": {"kind": "decisions", "entity_id": "decision:nope"}}
+```
+
+Unknown kind (`/api/unknown/thing`), unknown filters and invalid pagination all
+use the standard 422 envelope; a graph-store outage returns 503
+`store_unavailable`.  These routes are registered last, so no earlier route
+(`/api/demo/state`, `/api/sources/{id}`, `/api/decisions/{id}/explanation`, ...)
+is shadowed.
+
+---
+
 ## 8. Cross-cutting implementation notes
 
 * **App factory** — `create_app(engine=None) -> FastAPI`; the engine is stored on
@@ -807,3 +893,109 @@ unchanged and returns the engine's result (HTTP 200).
 | GET | `/api/history/facts/{fact_id}/source-of-change` |
 | GET | `/api/ingest/adapters` (501 in this build) |
 | POST | `/api/ingest` (501 in this build) |
+| GET | `/api/entities` |
+| GET | `/api/decisions` · `/api/people` · `/api/projects` · `/api/systems` · `/api/teams` · `/api/assumptions` · `/api/events` |
+| GET | `/api/{kind}/{entity_id}` (same seven kinds) |
+
+## 10. Temporal, identity and trust semantics
+
+These rules describe the implementation exactly (`tripwire/core/models.py`,
+`history.py`, `index.py`, `alerts.py`); clients should rely on them rather than
+re-deriving meaning from raw strings.
+
+### 10.1 `label` vs `name`
+
+* **`label`** is the node's **kind** - the schema type: `Decision`, `Person`,
+  `Project`, `System`, `Team`, `Assumption`, `Fact`, `Event`, `Alert`,
+  `Message`, `Document`.  `type` is an identical copy for renderers that key on
+  `type`.  Filter, group and pick iconography by `label`/`type`.
+* **`name`** is the **human-readable display name** ("Launch Northwind in the EU
+  on the Frankfurt hosting partner").  Never parse it, never use it as a key.
+* **`id`** is the canonical identifier (`decision:eu-launch`,
+  `person:jonas-berg`); it is stable and is what every other endpoint takes.
+* Entity-list items add **`kind`** (the lowercase list key, e.g. `decisions`)
+  and **`state`** (the node's recorded status lowercased - `active`,
+  `potentially_stale`, `contested`, ...; `recorded` for events, `unknown` when
+  the node records no status).  `state` is presentation-normalised text;
+  `status` remains the authoritative stored value.
+
+### 10.2 `recorded_to` vs `valid_to` (bitemporal time)
+
+Tripwire stores two independent time axes on facts:
+
+* **`recorded_at` / `recorded_to` - transaction (belief) time**: the half-open
+  interval `[recorded_at, recorded_to)` during which **Tripwire believed** the
+  record.  `recorded_to` is the end of the record's *recorded lifetime* and is
+  set when the system genuinely stops treating it as the current belief -
+  most commonly when a later assertion **supersedes** it.  `recorded_to = null`
+  means "still believed" (see `still_believed` in
+  `/api/history/facts/{fact_id}`).  A contradiction alone does **not** close the
+  interval; it sets `status = CONTESTED` and leaves `recorded_to` open.
+* **`valid_from` / `valid_to` - valid (effective) time**: the period for which
+  the fact is claimed to be **true in the real world**.  `valid_to` may be a
+  **scheduled future expiry**.  **A future `valid_to` does not mean the record
+  is already invalid** - it means "currently true, expires then".  Only
+  `valid_to <= now` (or a superseding assertion/contradiction) makes a fact no
+  longer current.
+
+Reading the two together:
+
+| situation | `recorded_to` | `valid_to` | `status` | client should show |
+|---|---|---|---|---|
+| current belief, true now | `null` | future/`null` | `ACTIVE` | **current** |
+| superseded by a newer assertion | set (past) | may be past or future | `ACTIVE`/`INVALIDATED` | **superseded** - do not present as the current belief |
+| expired in the real world | `null` or past | **past** | `INVALIDATED`/`ACTIVE` | **expired** - belief may still be recorded, truth window ended |
+| contradicted, review pending | `null` | varies | `CONTESTED` | **contested / unresolved** - not confirmed false |
+| decision flagged by propagation | n/a | n/a | `POTENTIALLY_STALE` | **potentially stale** - supporting evidence may still exist; this is *not* a confirmation of staleness |
+
+Use `/api/history/belief?at=` for "what did we believe then",
+`/api/history/valid?at=` for "what was true then", and
+`/api/history/changes?since=` for "what did we learn since".  The Frankfurt
+scenario demonstrates the last distinction:
+`decision:eu-launch` is `POTENTIALLY_STALE` while independent SOC 2 evidence
+still supports `assumption:data-residency-eu`, and
+`project:pricing-v2` - not the decision - is the entity whose only support is
+challenged.  Potential staleness is never upgraded to `STALE` without an
+explicit, confirmed review.
+
+### 10.3 Path traversal direction and `edge_direction` (`GET /api/paths`)
+
+* Paths are **walks**: every step continues from the previous step's node
+  (`step[i].dst == step[i+1].src`), found with a single mixed-direction search,
+  so a chain that leaves the source backwards and rejoins forwards (e.g.
+  `Fact <-SUPPORTED_BY- Assumption <-ASSUMES- Decision -IMPACTS-> Project`) is
+  reported correctly.
+* Edges are *stored* with their schema direction (e.g. `Decision -ASSUMES->
+  Assumption`).  A walk often follows an edge **against** that storage
+  direction.  Each step therefore reports both:
+  * `src`/`dst` - the **walk** order (how the chain reads), and
+  * `props.edge_direction` - `"forward"` when the walk follows the stored
+    direction (`stored_src -> stored_dst`), `"reverse"` when it goes against it
+    (`props.stored_src`/`props.stored_dst` always record the true stored
+    endpoints).
+* Rendering a path must honour walk order; `edge_direction` exists so the true
+  storage direction is never hidden or reinterpreted.
+* Validation is strict: an unknown endpoint returns `found: false` with a
+  `reason`, and a chain that is not connected from the requested source is
+  **truncated**, never fabricated into a plausible-looking path.  A response
+  with `found: false` must never be displayed as an evidence chain.
+
+### 10.4 Alerts: `allowed_transitions`, review notes and history
+
+* **`allowed_transitions`** (on `GET /api/alerts/{id}` and the list items) is
+  derived directly from `ALERT_STATUS_TRANSITIONS` in
+  `tripwire/core/alerts.py`: `[current_status, *legal next statuses]`.  It is
+  the single source of truth - clients must offer only these options; any other
+  target returns **409** (`invalid_transition`), an unknown status **422**, an
+  unknown alert **404** (see section 5 for the table).
+* **Same-status review with a `note`** is the supported way to add review
+  commentary without changing status: the alert stays in its status (200, no
+  transition), and the note is **persisted** on the alert (`review_note`,
+  `last_review_note`, `last_reviewed_by`) and appended to the alert history as
+  an `ALERT_REVIEW_NOTE` entry whose summary quotes it.
+* **Same-status review without a `note`** is an idempotent no-op: 200, no new
+  history entry, no state change - repeated calls cannot inflate the history.
+* **Alert history** (`GET /api/alerts/{id}/history`) is append-only and ordered:
+  every real status change appears as `ALERT_STATUS_CHANGE` with actor, `from`/
+  `to` and optional `note`.  History is never rewritten, and a note-less
+  duplicate review adds nothing.

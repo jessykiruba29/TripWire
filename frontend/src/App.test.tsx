@@ -1,9 +1,12 @@
-﻿/**
+/**
  * Integration tests for the whole application, running against the real
  * in-browser reference engine (mock mode) — the same code path the backend serves.
  *
  * jsdom has no 2D canvas, which is exactly why the graph has a text view: these
  * tests exercise that real fallback rather than mocking the graph out.
+ *
+ * Since the dashboard was split into routed pages, every test navigates through
+ * the real sidebar links — which also proves routing, deep links and the shell.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -13,6 +16,8 @@ import { App } from './App';
 
 beforeEach(() => {
   vi.stubEnv('VITE_API_MODE', 'mock');
+  // The dashboard lives at /command; "/" is the landing page.
+  window.location.hash = '#/command';
 });
 
 afterEach(() => {
@@ -27,7 +32,15 @@ async function renderApp() {
   return { user, view };
 }
 
+/** Navigate via the sidebar links, exactly as a user would. */
+async function goto(user: ReturnType<typeof userEvent.setup>, name: RegExp) {
+  // Scoped to the sidebar so page-content links with similar text can't collide.
+  const nav = screen.getByRole('navigation', { name: 'Primary' });
+  await user.click(within(nav).getByRole('link', { name }));
+}
+
 async function runScenario(user: ReturnType<typeof userEvent.setup>) {
+  await goto(user, /Scenario Lab/);
   const scenario = screen.getByTestId('scenario-panel');
   const button = within(scenario).getByRole('button', { name: /Run Frankfurt scenario/i });
   await waitFor(() => expect(button).toBeEnabled());
@@ -37,6 +50,23 @@ async function runScenario(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('Tripwire application', () => {
+  it('opens on a front page that explains the product before the app', async () => {
+    window.location.hash = '#/';
+    const user = userEvent.setup();
+    render(<App />);
+
+    // The landing page replaces the shell: no sidebar, no mode banner, no page head.
+    const headline = await screen.findByRole('heading', { level: 1 }, { timeout: 15000 });
+    expect(headline.textContent).toMatch(/ground/i);
+    expect(screen.queryByRole('navigation', { name: 'Primary' })).toBeNull();
+    expect(screen.queryByText('MOCK MODE')).toBeNull();
+
+    // The primary call to action enters the application and boots the shell.
+    await user.click(screen.getByRole('link', { name: /Enter Tripwire/i }));
+    await screen.findByText('MOCK MODE', {}, { timeout: 15000 });
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeTruthy();
+  });
+
   it('boots into mock mode and says so, rather than passing fixtures off as live data', async () => {
     await renderApp();
 
@@ -45,15 +75,31 @@ describe('Tripwire application', () => {
     // the mode string from GET /api/health is shown verbatim
     expect(await screen.findByText('mock-backend')).toBeInTheDocument();
 
-    // the identity and the product explanation are present
-    expect(screen.getByText('Tripwire')).toBeInTheDocument();
-    expect(screen.getByText(/Every decision keeps the assumptions it was made on/i)).toBeInTheDocument();
+    // the header carries identity and status but no prose; navigation is grouped
+    expect((await screen.findAllByText('Tripwire')).length).toBeGreaterThan(0);
+    expect(screen.getByText('Investigate')).toBeInTheDocument();
+    expect(screen.getByText('Trust')).toBeInTheDocument();
+  });
+
+  it('navigates between routed pages with active-route indicators and titles', async () => {
+    const { user } = await renderApp();
+
+    await goto(user, /Knowledge Graph/);
+    expect(await screen.findByTestId('graph-panel')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /Knowledge Graph/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Knowledge Graph/ })).toHaveAttribute('aria-current', 'page');
+
+    await goto(user, /Alerts & Review/);
+    expect(screen.getByRole('heading', { level: 1, name: /Alerts & Review/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Alerts & Review/ })).toHaveAttribute('aria-current', 'page');
+    expect(window.location.hash).toBe('#/alerts');
   });
 
   it('renders the graph, its legend and the entity counts', async () => {
-    await renderApp();
+    const { user } = await renderApp();
+    await goto(user, /Knowledge Graph/);
 
-    const graphPanel = screen.getByTestId('graph-panel');
+    const graphPanel = await screen.findByTestId('graph-panel');
     // jsdom has no 2D canvas, so this is the real text fallback, not a mock
     expect(await within(graphPanel).findByTestId('graph-text-view')).toBeInTheDocument();
     expect(within(graphPanel).getByText(/Company knowledge graph/i)).toBeInTheDocument();
@@ -69,11 +115,13 @@ describe('Tripwire application', () => {
   });
 
   it('starts in the baseline phase and shows an honest empty explanation', async () => {
-    await renderApp();
+    const { user } = await renderApp();
 
+    await goto(user, /Scenario Lab/);
     const scenario = screen.getByTestId('scenario-panel');
-    expect(within(scenario).getByText('Baseline')).toBeInTheDocument();
+    expect(await within(scenario).findByText('Baseline')).toBeInTheDocument();
 
+    await goto(user, /Decision Explorer/);
     const decisions = screen.getByTestId('decision-panel');
     expect(await within(decisions).findByText(/All decisions \(9\)/)).toBeInTheDocument();
 
@@ -84,17 +132,19 @@ describe('Tripwire application', () => {
   it('runs the Frankfurt scenario through the backend and shows the full chain', async () => {
     const { user } = await renderApp();
     const scenario = await runScenario(user);
-    const decisions = screen.getByTestId('decision-panel');
-    const explanation = screen.getByTestId('explanation-panel');
 
     // 1. the event and its verbatim source
     expect(
-      within(scenario).getAllByText(/Our Frankfurt hosting partner has lost its EU compliance certification\./).length,
+      within(scenario).getAllByText(/Our Frankfurt hosting partner has lost its EU compliance certification\./)
+        .length,
     ).toBeGreaterThan(0);
     // the panel reports that decisions were deliberately left alone
     expect(within(scenario).getByText(/Tripwire did not overreact/i)).toBeInTheDocument();
 
     // 2. affected decisions are grouped, and the unaffected stay visible
+    await goto(user, /Decision Explorer/);
+    const decisions = screen.getByTestId('decision-panel');
+    const explanation = screen.getByTestId('explanation-panel');
     expect(await within(decisions).findByText(/Flagged for review/i)).toBeInTheDocument();
     expect(
       within(decisions).getAllByText(/Proceed with the EU launch on the Frankfurt hosting plan/i).length,
@@ -118,12 +168,14 @@ describe('Tripwire application', () => {
     expect(within(explanation).getByText('FACT-PARTNER-STATUS-REVIEW')).toBeInTheDocument();
 
     // 5. the graph reports the highlighted chain
+    await goto(user, /Knowledge Graph/);
     const graphPanel = screen.getByTestId('graph-panel');
     expect(await within(graphPanel).findByText(/Chain highlighted/i)).toBeInTheDocument();
   });
 
   it('gates the guided storyline on what the backend can actually support', async () => {
     const { user } = await renderApp();
+    await goto(user, /Scenario Lab/);
     const scenario = screen.getByTestId('scenario-panel');
 
     const before = within(scenario).getAllByRole('button', { name: /Run the scenario first/i });
@@ -137,7 +189,7 @@ describe('Tripwire application', () => {
     expect(within(scenario).getByRole('button', { name: /Step back in time/i })).toBeEnabled();
   });
 
-  it('jumps to the matching panel when a storyline step is chosen', async () => {
+  it('jumps to the matching page when a storyline step is chosen', async () => {
     const { user } = await renderApp();
     const scenario = await runScenario(user);
 
@@ -151,14 +203,19 @@ describe('Tripwire application', () => {
 
   it('resets the demo back to the baseline graph', async () => {
     const { user } = await renderApp();
-    const scenario = await runScenario(user);
+    await runScenario(user);
+
+    await goto(user, /Decision Explorer/);
+    const decisionsBefore = screen.getByTestId('decision-panel');
+    expect(await within(decisionsBefore).findByText(/Flagged for review/i)).toBeInTheDocument();
+
+    await goto(user, /Scenario Lab/);
+    const scenarioPanel = screen.getByTestId('scenario-panel');
+    await user.click(within(scenarioPanel).getByRole('button', { name: /Reset demo/i }));
+    expect(await within(scenarioPanel).findByText('Baseline')).toBeInTheDocument();
+
+    await goto(user, /Decision Explorer/);
     const decisions = screen.getByTestId('decision-panel');
-
-    expect(await within(decisions).findByText(/Flagged for review/i)).toBeInTheDocument();
-
-    await user.click(within(scenario).getByRole('button', { name: /Reset demo/i }));
-
-    expect(await within(scenario).findByText('Baseline')).toBeInTheDocument();
     await waitFor(() => {
       expect(within(decisions).getByText(/All decisions \(9\)/)).toBeInTheDocument();
     });
@@ -169,6 +226,7 @@ describe('Tripwire application', () => {
 
   it('explains a decision from the list and states honestly when nothing challenges it', async () => {
     const { user } = await renderApp();
+    await goto(user, /Decision Explorer/);
     const decisions = screen.getByTestId('decision-panel');
     const explanation = screen.getByTestId('explanation-panel');
 
@@ -189,6 +247,7 @@ describe('Tripwire application', () => {
     const { user } = await renderApp();
     await runScenario(user);
 
+    await goto(user, /Decision Explorer/);
     const decisions = screen.getByTestId('decision-panel');
     const explainButtons = within(decisions).getAllByRole('button', { name: 'Explain' });
     await user.click(explainButtons[0]);
@@ -202,7 +261,8 @@ describe('Tripwire application', () => {
 
   it('filters the graph by entity type without inventing entities', async () => {
     const { user } = await renderApp();
-    const graphPanel = screen.getByTestId('graph-panel');
+    await goto(user, /Knowledge Graph/);
+    const graphPanel = await screen.findByTestId('graph-panel');
     const legend = within(graphPanel).getByTestId('graph-legend');
     const counts = () => within(graphPanel).getByTestId('graph-counts').textContent ?? '';
 
@@ -217,7 +277,8 @@ describe('Tripwire application', () => {
 
   it('keeps at least one entity type visible so the graph cannot be emptied by accident', async () => {
     const { user } = await renderApp();
-    const graphPanel = screen.getByTestId('graph-panel');
+    await goto(user, /Knowledge Graph/);
+    const graphPanel = await screen.findByTestId('graph-panel');
     const legend = within(graphPanel).getByTestId('graph-legend');
 
     const typeButtons = within(legend).getAllByRole('button');
@@ -238,7 +299,7 @@ describe('Tripwire application', () => {
     const { user } = await renderApp();
     await runScenario(user);
 
-    await user.click(screen.getByRole('tab', { name: /Evidence/i }));
+    await goto(user, /Evidence & Provenance/);
 
     expect(await screen.findByText(/Source evidence/i)).toBeInTheDocument();
     expect((await screen.findAllByText(/Simulated/i)).length).toBeGreaterThan(0);
@@ -249,7 +310,7 @@ describe('Tripwire application', () => {
   it('lets the operator step back in recorded time', async () => {
     const { user, view } = await renderApp();
 
-    await user.click(screen.getByRole('tab', { name: /History/i }));
+    await goto(user, /History & Activity/);
 
     expect((await screen.findAllByText(/What the company believed, and when/i)).length).toBeGreaterThan(0);
     expect(screen.getByText(/never re-stamps today's graph onto the past/i)).toBeInTheDocument();
@@ -263,7 +324,7 @@ describe('Tripwire application', () => {
     const { user } = await renderApp();
     await runScenario(user);
 
-    await user.click(screen.getByRole('tab', { name: /Alerts/i }));
+    await goto(user, /Alerts & Review/);
     expect(await screen.findByText(/ALERT-0001/)).toBeInTheDocument();
   });
 
@@ -271,7 +332,7 @@ describe('Tripwire application', () => {
     const { user } = await renderApp();
     await runScenario(user);
 
-    await user.click(screen.getByRole('tab', { name: /Alerts/i }));
+    await goto(user, /Alerts & Review/);
     expect(await screen.findByText('ALERT-0001')).toBeInTheDocument();
 
     // the review control states plainly, on every alert, that the change shows only

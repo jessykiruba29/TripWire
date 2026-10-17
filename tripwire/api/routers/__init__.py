@@ -23,4 +23,5 @@ __all__ = [
     "search",
     "sources",
     "ingest",
+    "entities",
 ]

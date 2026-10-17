@@ -60,6 +60,9 @@ __all__ = [
     "SourceDetailResponse",
     "DemoStateResponse",
     "SeedResponse",
+    "EntityListResponse",
+    "EntityDetailResponse",
+    "EntityIndexResponse",
 ]
 
 
@@ -474,3 +477,45 @@ class SourceDetailResponse(EnginePayload):
     source: Optional[dict[str, Any]] = None
     states: list[dict[str, Any]] = Field(default_factory=list)
     states_count: int = 0
+
+
+# --------------------------------------------------------------------------- #
+# Entity listings
+# --------------------------------------------------------------------------- #
+class EntityListResponse(EnginePayload):
+    """Paginated listing of one entity kind.
+
+    ``items`` are flattened node views (identity + inlined properties) with the
+    derived ``kind``, ``summary``, ``state``, ``relations`` and ``related_ids``
+    navigation fields.  ``counts`` is the histogram over the *whole* snapshot,
+    never over the returned page, so a client can render "showing N of M" from
+    one response.
+    """
+
+    kind: str = ""
+    label: str = ""
+    labels: list[str] = Field(default_factory=list)
+    total: int = 0
+    count: int = 0
+    limit: int = 50
+    offset: int = 0
+    filters: dict[str, Any] = Field(default_factory=dict)
+    counts: dict[str, int] = Field(default_factory=dict)
+    items: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class EntityDetailResponse(EnginePayload):
+    """One entity of a known kind, or a 404 error envelope."""
+
+    found: bool = True
+    kind: str = ""
+    entity_id: str = ""
+    entity: Optional[dict[str, Any]] = None
+
+
+class EntityIndexResponse(EnginePayload):
+    """Overview of every entity kind with snapshot-wide counts."""
+
+    total: int = 0
+    counts: dict[str, int] = Field(default_factory=dict)
+    kinds: list[dict[str, Any]] = Field(default_factory=list)

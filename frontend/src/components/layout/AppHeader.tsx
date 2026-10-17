@@ -16,18 +16,19 @@ import './layout.css';
 export function TripwireMark({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" role="img" aria-label="Tripwire">
-      <rect width="32" height="32" rx="7" fill="#1f4bd8" />
-      <path d="M5 16h6.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M20.5 16H27" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />
-      <path
-        d="M11.5 16c0-3 2.2-5 4.5-5s4.5 2 4.5 5-2.2 5-4.5 5-4.5-2-4.5-5Z"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="1.6"
-      />
-      <circle cx="16" cy="16" r="2.1" fill="#fff" />
-      <path d="M7 9.5 16 6l9 3.5" stroke="rgba(255,255,255,0.55)" strokeWidth="1.2" strokeLinecap="round" />
-      <path d="M7 22.5 16 26l9-3.5" stroke="rgba(255,255,255,0.55)" strokeWidth="1.2" strokeLinecap="round" />
+      <defs>
+        <linearGradient id="tripwire-mark" x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#a68dff" />
+          <stop offset="1" stopColor="#59d9ff" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="9" fill="#10142b" stroke="#6659aa" />
+      <path d="M8 10.5 16 16l8-6M8 21.5 16 16l8 5.5" fill="none" stroke="url(#tripwire-mark)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="8" cy="10.5" r="2.3" fill="#d4c8ff" />
+      <circle cx="8" cy="21.5" r="2.3" fill="#91e8ff" />
+      <circle cx="24" cy="10.5" r="2.3" fill="#91e8ff" />
+      <circle cx="24" cy="21.5" r="2.3" fill="#d4c8ff" />
+      <circle cx="16" cy="16" r="3" fill="#f2b8ff" stroke="#10142b" strokeWidth="1.2" />
     </svg>
   );
 }
@@ -63,10 +64,6 @@ export function AppHeader({
               <span className="header__wordmark">Tripwire</span>
               <span className="header__version">{health?.version ? `v${health.version}` : ''}</span>
             </div>
-            <p className="header__tagline">
-              Every decision keeps the assumptions it was made on. When new information breaks one, Tripwire shows what
-              changed, what it reaches, and who has to look.
-            </p>
           </div>
         </div>
 
@@ -123,12 +120,7 @@ export function ModeBanner({ connection, health }: { connection: ApiConnection |
     return (
       <div className="banner" role="status">
         <span className="banner__label">MOCK MODE</span>
-        <span className="banner__text">
-          {connection.reason} Every record is marked <strong>simulated</strong> and every payload comes from the same
-          deterministic reference engine the API contract describes. Set{' '}
-          <span className="mono">VITE_API_MODE=live</span> (or point{' '}
-          <span className="mono">VITE_API_BASE_URL</span> at a running backend) to use real data.
-        </span>
+        <span className="banner__text">Reference data · connect a live backend for production records.</span>
         {connection.probeError ? (
           <span className="banner__meta" title={connection.probeError.message}>
             {connection.probeError.code}
@@ -143,9 +135,7 @@ export function ModeBanner({ connection, health }: { connection: ApiConnection |
       <div className="banner banner--info" role="status">
         <span className="banner__label">BACKEND MODE</span>
         <span className="banner__text">
-          The backend reports <span className="mono">{health.mode}</span> for dataset{' '}
-          <span className="mono">{health.dataset.name}</span>. Tripwire shows that string verbatim so fixture data can
-          never be mistaken for a live company system.
+          {health.mode} · {health.dataset.name}
         </span>
       </div>
     );

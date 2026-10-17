@@ -57,7 +57,7 @@
   flex-direction: column;
   gap: var(--sp-2);
   padding: var(--sp-3);
-  border: 1px solid #bcdff0;
+  border: 1px solid rgba(111, 215, 242, 0.35);
   background: var(--signal-info-soft);
   border-radius: var(--radius);
   margin-bottom: var(--sp-3);
@@ -107,7 +107,7 @@
 .demo__step--ready .demo__step-index {
   background: var(--signal-ok-soft);
   color: var(--signal-ok);
-  border-color: #b9e0cd;
+  border-color: rgba(85, 214, 168, 0.35);
 }
 
 .demo__step-body {

@@ -70,8 +70,8 @@
   padding: var(--sp-2);
   border-radius: var(--radius);
   background: var(--signal-warning-soft);
-  border: 1px solid #f0d8a8;
-  color: #6b3f00;
+  border: 1px solid rgba(246, 185, 90, 0.35);
+  color: var(--signal-warning);
   font-size: var(--fs-sm);
 }
 

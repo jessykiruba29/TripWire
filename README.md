@@ -100,6 +100,31 @@ work merely because it is described in a specification.
 
 ---
 
+## HTTP API at a glance
+
+Full contract: [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) (including the `label` vs `name`,
+`recorded_to` vs `valid_to`, path `edge_direction` and alert `allowed_transitions` semantics).
+
+| Route | Purpose |
+|---|---|
+| `GET /api/health` | Liveness, active/configured backend, seeded flag |
+| `GET /api/graph` · `GET /api/paths` · `GET /api/search` | Graph payload, validated relationship paths, substring search |
+| `GET /api/entities` | Every entity kind with snapshot-wide counts |
+| `GET /api/decisions` · `/api/people` · `/api/projects` · `/api/systems` · `/api/teams` · `/api/assumptions` · `/api/events` | Dedicated entity lists — `?status=`, `?q=`, `?limit=`, `?offset=` plus documented kind filters; unknown filters are 422 |
+| `GET /api/{kind}/{entity_id}` | One entity (same view as the list); unknown id → 404 envelope |
+| `GET /api/decisions/{id}/explanation` · `/dependencies?at=` · `POST .../status` | Decision reasoning and audited status changes |
+| `GET /api/alerts` · `GET /api/alerts/{id}` · `/history` · `POST .../review` | Alert feed/detail with `allowed_transitions`, append-only history, note-preserving reviews |
+| `GET /api/history/belief` · `/valid` · `/changes` | Bitemporal queries (belief time vs world time) |
+| `POST /api/demo/seed` · `/reset` · `/trigger-event` · `GET /api/demo/state` | Idempotent demo lifecycle and the Frankfurt scenario |
+| `GET /api/experts` · `POST /api/contradictions/find` · `POST /api/staleness/propagate` | Contribution-based experts, contradiction checks, propagation plans |
+
+```bash
+curl 'http://127.0.0.1:8000/api/decisions?status=ACTIVE&limit=2'
+# → {"kind": "decisions", "total": 7, "count": 2, "counts": {...}, "items": [...], ...}
+```
+
+---
+
 ## Repository layout
 
 ```
